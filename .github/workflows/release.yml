@@ -66,6 +66,7 @@ jobs:
         with:
           name: ui-npm-packages
           path: ${{ env.RELEASE_DIR }}/*.tgz
+          include-hidden-files: true
           if-no-files-found: error
       - name: Publish tokens then Astro through OIDC
         if: github.event_name == 'push' || inputs.publish == true
