@@ -1,0 +1,112 @@
+---
+import '@fontsource/hanken-grotesk/700.css';
+import '@fontsource/source-sans-3/400.css';
+import Card from '@kieksme/kieksme-astro/components/Card';
+import Button from '@kieksme/kieksme-astro/components/Button';
+import WebsiteHeading from '@kieksme/kieksme-astro/website/Heading';
+interface Props {kind?:'Card'|'Button'|'Heading'}
+const {kind='Card'}=Astro.props;
+const cardVariants=['surface','muted','brand'] as const;
+const paddings=['none','s','m','l'] as const;
+const cardShadows=['none','ink','aqua'] as const;
+const buttonVariants=['primary','secondary','ghost'] as const;
+const sizes=['s','m','l'] as const;
+const buttonShadows=['ink','none'] as const;
+const levels=[1,2,3] as const;
+const headingSizes=['s','l','xl','cta','cta-ki'] as const;
+const headingShadows=['fuchsia','aqua','none'] as const;
+const shadows={fuchsia:'var(--pop-fuchsia)',aqua:'var(--pop-aqua)',none:'transparent'};
+---
+<section class="live-playground" data-live-playground data-kind={kind} data-theme="light">
+ <header class="playground-intro"><p>kieks.me / Live Controls</p><h1>{kind==='Heading'?'Website Heading':kind}</h1><p>Ändere die Einstellungen. Die Vorschau und das passende Codebeispiel aktualisieren sich direkt.</p></header>
+ <div class="playground-layout">
+  <form class="playground-controls" aria-label={`${kind} konfigurieren`}>
+   <h2>Einstellungen</h2>
+   <label>Darstellung<select name="theme" aria-label="Darstellung"><option value="light">Hell</option><option value="dark">Dunkel</option></select></label>
+   {kind==='Card'&&<>
+    <label>Variante<select name="variant" aria-label="Variante">{cardVariants.map(v=><option value={v}>{v}</option>)}</select></label>
+    <label>Innenabstand<select name="padding" aria-label="Innenabstand">{paddings.map(v=><option value={v} selected={v==='m'}>{v}</option>)}</select></label>
+    <label>Schatten<select name="shadow" aria-label="Schatten">{cardShadows.map(v=><option value={v} selected={v==='aqua'}>{v}</option>)}</select></label>
+    <label>Titel<input aria-label="Titel" name="title" value="Gemeinsam mehr erreichen." maxlength="120"/></label>
+    <label>Beschreibung<textarea aria-label="Beschreibung" name="text" rows="4" maxlength="800">Wiederverwendbare Bausteine für Website und Kursportal.</textarea></label>
+   </>}
+   {kind==='Button'&&<>
+    <label>Variante<select name="variant" aria-label="Variante">{buttonVariants.map(v=><option value={v}>{v}</option>)}</select></label>
+    <label>Größe<select name="size" aria-label="Größe">{sizes.map(v=><option value={v} selected={v==='m'}>{v}</option>)}</select></label>
+    <label>Schatten<select name="shadow" aria-label="Schatten">{buttonShadows.map(v=><option value={v}>{v}</option>)}</select></label>
+    <label>Beschriftung<input aria-label="Beschriftung" name="label" value="Weiter zum Kurs" maxlength="120"/></label>
+    <label class="playground-check"><input type="checkbox" name="disabled"/>Deaktiviert</label>
+    <label class="playground-check"><input type="checkbox" name="icon"/>Pfeil im Inhalts-Slot</label>
+   </>}
+   {kind==='Heading'&&<>
+    <label>HTML-Ebene<select name="level" aria-label="HTML-Ebene">{levels.map(v=><option value={v} selected={v===2}>h{v}</option>)}</select></label>
+    <label>Größe<select name="size" aria-label="Größe">{headingSizes.map(v=><option value={v} selected={v==='l'}>{v}</option>)}</select></label>
+    <label>Textschatten<select name="shadow" aria-label="Textschatten">{headingShadows.map(v=><option value={v}>{v}</option>)}</select></label>
+    <label>Überschrift<input aria-label="Überschrift" name="text" value="Gemeinsam lernen." maxlength="120"/></label>
+   </>}
+   <button type="reset" class="playground-reset">Zurücksetzen</button>
+  </form>
+  <div class="playground-results">
+   <section class="playground-preview" aria-label="Komponentenvorschau"><div data-playground-canvas></div></section>
+   {kind==='Button'&&<p class="playground-action-count" role="status" data-playground-actions>Vorschauaktionen: 0</p>}
+   <section class="playground-code" aria-label="Codebeispiel"><h2>Verwendung</h2><pre><code data-playground-code></code></pre></section>
+   <p class="playground-note">Diese Oberfläche verwendet echte, beim Build gerenderte Astro-Komponenten. Texte werden ausschließlich als Text eingesetzt. Kein Server und keine Auswertung von eingegebenem Code.</p>
+  </div>
+ </div>
+ <div hidden aria-hidden="true">
+  {kind==='Card'&&cardVariants.flatMap(variant=>paddings.flatMap(padding=>cardShadows.map(shadow=><template data-playground-template={`${variant}|${padding}|${shadow}`}><Card variant={variant} padding={padding} shadow={shadow} title="Gemeinsam mehr erreichen." text="Wiederverwendbare Bausteine für Website und Kursportal."/></template>)))}
+  {kind==='Button'&&buttonVariants.flatMap(variant=>sizes.flatMap(size=>buttonShadows.flatMap(shadow=>[false,true].flatMap(disabled=>[false,true].map(icon=><template data-playground-template={`${variant}|${size}|${shadow}|${disabled}|${icon}`}><Button variant={variant} size={size} shadow={shadow} disabled={disabled}><span data-playground-button-label>Weiter zum Kurs</span>{icon&&<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-left:.5em"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>}</Button></template>)))))}
+  {kind==='Heading'&&levels.flatMap(level=>headingSizes.flatMap(size=>headingShadows.map(shadow=><template data-playground-template={`${level}|${size}|${shadow}`}><WebsiteHeading level={level} size={size} shadowColor={shadows[shadow]} shadowSize={shadow==='none'?'0 0 0':undefined} class="playground-heading-text">Gemeinsam lernen.</WebsiteHeading></template>)))}
+ </div>
+ <noscript><p>Für die Live-Einstellungen ist JavaScript erforderlich. Die übrigen Komponentenbeispiele im Katalog sind auch ohne Live Controls verfügbar.</p></noscript>
+</section>
+<script>
+ function initialisePlaygrounds(){
+  document.querySelectorAll<HTMLElement>('[data-live-playground]').forEach(root=>{
+   if(root.dataset.ready)return;root.dataset.ready='true';
+   const form=root.querySelector<HTMLFormElement>('form')!;
+   const canvas=root.querySelector<HTMLElement>('[data-playground-canvas]')!;
+   const code=root.querySelector<HTMLElement>('[data-playground-code]')!;
+   const templates=new Map([...root.querySelectorAll<HTMLTemplateElement>('template[data-playground-template]')].map(template=>[template.dataset.playgroundTemplate!,template]));
+   let actions=0;
+   const quote=(text:string)=>JSON.stringify(text);
+   function render(){
+    const fields=new FormData(form);const get=(name:string)=>String(fields.get(name)||'');
+    root.dataset.theme=get('theme')==='dark'?'dark':'light';
+    let key='';let example='';
+    if(root.dataset.kind==='Card'){
+     key=[get('variant'),get('padding'),get('shadow')].join('|');
+     example=`import Card from '@kieksme/kieksme-astro/components/Card';\n\n<Card\n  variant=${quote(get('variant'))}\n  padding=${quote(get('padding'))}\n  shadow=${quote(get('shadow'))}\n  title={${quote(get('title'))}}\n  text={${quote(get('text'))}}\n/>`;
+    }else if(root.dataset.kind==='Button'){
+     key=[get('variant'),get('size'),get('shadow'),fields.has('disabled'),fields.has('icon')].join('|');
+     const icon=fields.has('icon')?'\n  <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none">\n    <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" />\n  </svg>':'';
+     example=`import Button from '@kieksme/kieksme-astro/components/Button';\n\n<Button variant=${quote(get('variant'))} size=${quote(get('size'))} shadow=${quote(get('shadow'))}${fields.has('disabled')?' disabled':''}>\n  {${quote(get('label'))}}${icon}\n</Button>`;
+    }else{
+     key=[get('level'),get('size'),get('shadow')].join('|');
+     const color=get('shadow')==='none'?'transparent':get('shadow')==='aqua'?'var(--pop-aqua)':'var(--pop-fuchsia)';
+     example=`import Heading from '@kieksme/kieksme-astro/website/Heading';\n\n<Heading level={${get('level')}} size=${quote(get('size'))} shadowColor=${quote(color)}${get('shadow')==='none'?' shadowSize="0 0 0"':''}>\n  {${quote(get('text'))}}\n</Heading>`;
+    }
+    const template=templates.get(key);if(!template)return;
+    canvas.replaceChildren(template.content.cloneNode(true));
+    if(root.dataset.kind==='Card'){
+     const heading=canvas.querySelector('.ui-card-header h2')!;
+     if(get('title'))heading.textContent=get('title');else heading.closest('header')!.remove();
+     const paragraph=canvas.querySelector('.ui-card-content p')!;
+     if(get('text'))paragraph.textContent=get('text');else paragraph.remove();
+    }else if(root.dataset.kind==='Button')canvas.querySelector('[data-playground-button-label]')!.textContent=get('label');
+    else canvas.querySelector('.playground-heading-text')!.textContent=get('text');
+    code.textContent=example;
+   }
+   form.addEventListener('input',render);form.addEventListener('change',render);
+   form.addEventListener('submit',event=>event.preventDefault());
+   form.addEventListener('reset',()=>{actions=0;const status=root.querySelector('[data-playground-actions]');if(status)status.textContent='Vorschauaktionen: 0';setTimeout(render,0)});
+   canvas.addEventListener('click',event=>{if(root.dataset.kind==='Button'&&(event.target as Element).closest('button:not(:disabled)')){actions++;root.querySelector('[data-playground-actions]')!.textContent=`Vorschauaktionen: ${actions}`}});
+   render();
+  });
+ }
+ initialisePlaygrounds();document.addEventListener('astro:page-load',initialisePlaygrounds);
+</script>
+<style>
+.live-playground{box-sizing:border-box;min-height:100vh;padding:clamp(16px,3vw,36px);background:var(--page-bg);color:var(--text-primary);font-family:'Source Sans 3',Arial,sans-serif;overflow-wrap:anywhere}.playground-intro{margin-bottom:28px}.playground-intro h1{font:800 clamp(2rem,4vw,3.5rem)/1.1 'Hanken Grotesk',Arial,sans-serif;margin:.4rem 0 1rem}.playground-intro p{margin:0 0 .5rem;color:var(--text-secondary);line-height:1.5}.playground-layout{display:grid;grid-template-columns:minmax(220px,280px) minmax(0,1fr);gap:24px;align-items:start}.playground-controls{display:grid;gap:16px;padding:20px;background:var(--surface);border:2px solid var(--ink);min-width:0}.playground-controls h2,.playground-code h2{font:800 1.125rem/1.3 'Hanken Grotesk',Arial,sans-serif;margin:0}.playground-controls label{display:grid;gap:6px;font-weight:700;min-width:0}.playground-controls input:not([type=checkbox]),.playground-controls select,.playground-controls textarea{box-sizing:border-box;width:100%;min-width:0;min-height:44px;border:2px solid var(--text-secondary);padding:9px;background:var(--surface);color:var(--text-primary);font:400 1rem/1.4 'Source Sans 3',Arial,sans-serif}.playground-controls textarea{resize:vertical}.playground-controls .playground-check{display:flex;align-items:center;gap:10px;min-height:44px}.playground-check input{width:20px;height:20px;accent-color:var(--pop-purple-deep)}.playground-controls :is(input,select,textarea,button):focus-visible{outline:3px solid var(--text-link);outline-offset:3px}.playground-reset{min-height:44px;border:2px solid var(--ink);background:var(--pop-aqua);color:var(--pop-navy);padding:10px 16px;cursor:pointer;font:700 1rem 'Hanken Grotesk',Arial,sans-serif}.playground-results{display:grid;gap:20px;min-width:0}.playground-preview{border:2px solid var(--ink);background:var(--surface);min-height:260px;padding:clamp(16px,3vw,40px);min-width:0}.playground-preview [data-playground-canvas]{min-width:0}.playground-code{border:2px solid var(--ink);padding:20px;background:var(--surface);min-width:0}.playground-code pre{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font:13px/1.6 ui-monospace,monospace;margin:16px 0 0}.playground-note,.playground-action-count{margin:0;color:var(--text-secondary);font-size:.9375rem;line-height:1.5}.playground-preview :global(.ui-card){max-width:100%}.playground-preview :global(.playground-heading-text){overflow-wrap:anywhere;max-width:100%}
+@media(max-width:720px){.playground-layout{grid-template-columns:minmax(0,1fr)}.playground-preview{min-height:180px}.playground-controls{grid-template-columns:minmax(0,1fr)}.playground-intro h1{font-size:2rem}}
+</style>

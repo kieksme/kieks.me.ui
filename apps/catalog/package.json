@@ -6,7 +6,7 @@
     "dev": "node scripts/clean.mjs && astro dev --host 0.0.0.0",
     "build": "node scripts/clean.mjs && astro build",
     "preview": "astro preview --host 0.0.0.0",
-    "test:browser": "node test/browser.mjs && node test/primitives.mjs"
+    "test:browser": "node test/browser.mjs && node test/primitives.mjs && node test/playground.mjs"
   },
   "dependencies": {
     "astro": "5.18.2",

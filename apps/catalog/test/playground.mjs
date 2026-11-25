@@ -1,0 +1,47 @@
+import assert from 'node:assert/strict';
+import {createServer} from 'node:http';
+import {readFile,stat} from 'node:fs/promises';
+import {existsSync} from 'node:fs';
+import {resolve,extname} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {chromium} from 'playwright';
+const root=fileURLToPath(new URL('../dist/',import.meta.url));
+const prefix=(process.env.CATALOG_BASE||'/').replace(/\/$/,'');
+const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2'};
+const server=createServer(async(req,res)=>{try{const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);if(prefix&&!pathname.startsWith(prefix+'/'))throw Error('base');let p=resolve(root,'.'+pathname.slice(prefix.length));if(p!==root.slice(0,-1)&&!p.startsWith(root))throw Error('path');if((await stat(p)).isDirectory())p=resolve(p,'index.html');res.setHeader('Content-Type',mime[extname(p)]||'application/octet-stream');res.end(await readFile(p));}catch{res.writeHead(404).end()}});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));
+let browser;
+try{
+ browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),headless:true,args:['--no-sandbox']});
+ const page=await browser.newPage({viewport:{width:1200,height:900}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const base=`http://127.0.0.1:${server.address().port}${prefix}`;
+ const open=async(kind)=>{assert.equal((await page.goto(`${base}/stories/src/stories/live-playground/${kind}/`)).status(),200);await page.locator('[data-playground-canvas] > *').waitFor()};
+ const canvas=()=>page.locator('[data-playground-canvas]');
+ await page.goto(base+'/');assert.ok(await page.locator('a[href*="live-playground"]').count());
+ await open('card');
+ const originalPadding=await canvas().locator('.ui-card').evaluate(el=>getComputedStyle(el).padding);
+ await page.getByLabel('Innenabstand',{exact:true}).selectOption('s');assert.notEqual(await canvas().locator('.ui-card').evaluate(el=>getComputedStyle(el).padding),originalPadding);
+ await page.getByLabel('Variante',{exact:true}).selectOption('brand');assert.equal(await canvas().locator('.ui-card').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(30, 42, 69)');
+ await page.getByLabel('Schatten',{exact:true}).selectOption('none');assert.equal(await canvas().locator('.ui-card').evaluate(el=>getComputedStyle(el).boxShadow),'none');
+ const injection='<img src=x onerror="window.__injected=true">';await page.getByLabel('Titel',{exact:true}).fill(injection);assert.equal(await canvas().locator('h2').textContent(),injection);assert.equal(await canvas().locator('img').count(),0);assert.equal(await page.evaluate(()=>window.__injected),undefined);assert.ok((await page.locator('[data-playground-code]').textContent()).includes(injection.replaceAll('"','\\"')));
+ await page.getByLabel('Beschreibung',{exact:true}).fill('Nur Text & <script>keine Ausführung</script>');assert.equal(await canvas().locator('.ui-card-content p').textContent(),'Nur Text & <script>keine Ausführung</script>');assert.equal(await canvas().locator('script').count(),0);
+ await page.getByLabel('Variante',{exact:true}).selectOption('surface');const light=await canvas().locator('.ui-card').evaluate(el=>getComputedStyle(el).backgroundColor);await page.getByLabel('Darstellung',{exact:true}).selectOption('dark');assert.notEqual(await canvas().locator('.ui-card').evaluate(el=>getComputedStyle(el).backgroundColor),light);
+ await page.getByRole('button',{name:'Zurücksetzen'}).click();await page.waitForFunction(()=>document.querySelector('[data-live-playground]').dataset.theme==='light');assert.equal(await page.getByLabel('Titel',{exact:true}).inputValue(),'Gemeinsam mehr erreichen.');assert.equal(await page.locator('[data-live-playground]').getAttribute('data-theme'),'light');
+ await page.getByLabel('Titel',{exact:true}).fill('');assert.equal(await canvas().locator('h2').count(),0);await page.getByLabel('Beschreibung',{exact:true}).fill('');assert.equal(await canvas().locator('.ui-card-content p').count(),0);await page.getByRole('button',{name:'Zurücksetzen'}).click();
+ console.log('PASS Card live variants, geometry, text injection safety, empty text, theme and reset');
+ await open('button');await page.getByLabel('Beschriftung',{exact:true}).fill('Jetzt starten');assert.equal(await canvas().getByRole('button').textContent(),'Jetzt starten');
+ const medium=await canvas().getByRole('button').evaluate(el=>getComputedStyle(el).minHeight);await page.getByLabel('Größe',{exact:true}).selectOption('l');assert.notEqual(await canvas().getByRole('button').evaluate(el=>getComputedStyle(el).minHeight),medium);
+ await page.getByLabel('Variante',{exact:true}).selectOption('secondary');assert.ok(await canvas().locator('.ui-button-secondary').count());
+ await page.getByLabel('Pfeil im Inhalts-Slot',{exact:true}).check();assert.equal(await canvas().locator('svg[aria-hidden=true]').count(),1);assert.ok((await page.locator('[data-playground-code]').textContent()).includes('<svg aria-hidden="true"'));
+ await canvas().getByRole('button').click();assert.equal(await page.locator('[data-playground-actions]').textContent(),'Vorschauaktionen: 1');await page.getByLabel('Deaktiviert',{exact:true}).check();assert.equal(await canvas().getByRole('button').isDisabled(),true);await canvas().getByRole('button').evaluate(el=>el.click());assert.equal(await page.locator('[data-playground-actions]').textContent(),'Vorschauaktionen: 1');
+ await page.getByRole('button',{name:'Zurücksetzen'}).click();await page.waitForFunction(()=>!document.querySelector('[data-playground-canvas] button').disabled);assert.equal(await canvas().getByRole('button').isDisabled(),false);assert.equal(await canvas().locator('svg').count(),0);assert.equal(await page.locator('[data-playground-actions]').textContent(),'Vorschauaktionen: 0');
+ console.log('PASS Button live size/variant/slot/label, disabled action and reset');
+ await open('heading');await page.getByLabel('HTML-Ebene',{exact:true}).selectOption('3');assert.equal(await canvas().locator('h3').count(),1);const normal=await canvas().locator('h3').evaluate(el=>getComputedStyle(el).fontSize);await page.getByLabel('Größe',{exact:true}).selectOption('s');assert.notEqual(await canvas().locator('h3').evaluate(el=>getComputedStyle(el).fontSize),normal);
+ await page.getByLabel('Textschatten',{exact:true}).selectOption('aqua');assert.ok((await canvas().locator('h3').evaluate(el=>getComputedStyle(el).textShadow)).includes('0, 255, 220'));
+ await page.getByLabel('Textschatten',{exact:true}).selectOption('none');assert.ok((await page.locator('[data-playground-code]').textContent()).includes('shadowSize="0 0 0"'));assert.equal(await canvas().locator('h3').getAttribute('style'),'color: var(--text-primary); text-shadow: 0 0 0 transparent;');
+ await page.getByLabel('Überschrift',{exact:true}).fill('<b>Nur Text</b>');assert.equal(await canvas().locator('h3').textContent(),'<b>Nur Text</b>');assert.equal(await canvas().locator('b').count(),0);
+ console.log('PASS real WebsiteHeading level/size/shadow props and safe slot text');
+ for(const kind of ['card','button','heading']){await open(kind);await page.setViewportSize({width:375,height:850});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);const control=page.locator('form select').first();await control.focus();assert.equal(await control.evaluate(el=>el===document.activeElement),true);assert.notEqual(await control.evaluate(el=>getComputedStyle(el).outlineStyle),'none');}
+ await open('card');await page.evaluate(()=>{const original=document.querySelector('[data-live-playground]');const clone=original.cloneNode(true);delete clone.dataset.ready;document.body.append(clone);document.dispatchEvent(new Event('astro:page-load'))});const instances=page.locator('[data-live-playground]');assert.equal(await instances.count(),2);await instances.nth(1).getByLabel('Titel',{exact:true}).fill('Zweite Instanz');assert.equal(await instances.nth(1).locator('[data-playground-canvas] h2').textContent(),'Zweite Instanz');assert.equal(await instances.nth(0).locator('[data-playground-canvas] h2').textContent(),'Gemeinsam mehr erreichen.');
+ assert.deepEqual(errors,[]);console.log('PASS mobile layout, keyboard focus and no page errors');
+}finally{await browser?.close();await new Promise(r=>server.close(r));}
