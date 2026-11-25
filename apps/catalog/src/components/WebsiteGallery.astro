@@ -1,0 +1,43 @@
+---
+import Heading from '@kieksme/kieksme-astro/website/Heading';
+import Button from '@kieksme/kieksme-astro/website/Button';
+import Lead from '@kieksme/kieksme-astro/website/Lead';
+import Logo from '@kieksme/kieksme-astro/website/Logo';
+import Marker from '@kieksme/kieksme-astro/website/Marker';
+import Sticker from '@kieksme/kieksme-astro/website/Sticker';
+import TextLink from '@kieksme/kieksme-astro/website/TextLink';
+import ZigzagDivider from '@kieksme/kieksme-astro/website/ZigzagDivider';
+import Burst from '@kieksme/kieksme-astro/website/Burst';
+import Flames from '@kieksme/kieksme-astro/website/Flames';
+import Halftone from '@kieksme/kieksme-astro/website/Halftone';
+import FaqItem from '@kieksme/kieksme-astro/website/FaqItem';
+import StepCard from '@kieksme/kieksme-astro/website/StepCard';
+import FeatureCard from '@kieksme/kieksme-astro/website/FeatureCard';
+import ServiceCard from '@kieksme/kieksme-astro/website/ServiceCard';
+import SpeechBubble from '@kieksme/kieksme-astro/website/SpeechBubble';
+const { kind = 'Heading', theme = 'light', ...input } = Astro.props;
+const components = { Heading, Button, Lead, Logo, Marker, Sticker, TextLink, ZigzagDivider, Burst, Flames, Halftone, FaqItem, StepCard, FeatureCard, ServiceCard, SpeechBubble };
+const Component = components[kind];
+const defaults = {
+  Heading: { size: 'l' }, Button: { text: 'Gemeinsam starten' }, Logo: { layout: 'horizontal', isAnimated: false },
+  TextLink: { href: 'https://kieks.me' }, Burst: { width: 160, height: 160, spin: false },
+  Halftone: { width: 260, height: 180 }, FaqItem: { title: 'Wie lernen wir gemeinsam?', open: true },
+  StepCard: { num: '01', title: 'gemeinsam starten', description: 'Ein klarer nächster Schritt.', accent: 'aqua' },
+  FeatureCard: { title: 'Wissen wird wirksam', description: 'Verständlich, praktisch und gemeinsam.', edge: 'fuchsia' },
+  ServiceCard: { num: '01', title: 'KI-Kompetenz', description: 'Verantwortungsvoll mit KI arbeiten.', href: 'https://kieks.me', linkText: 'Mehr erfahren', headColor: 'aqua' },
+};
+const componentProps = { ...defaults[kind], ...input };
+const text = kind === 'Heading' ? 'gemeinsam weiterdenken' : kind === 'Sticker' ? 'Wissen teilen' : 'Klare Inhalte. Eine gemeinsame Gestaltung für Website und Kurse.';
+---
+
+<section data-theme={theme} class:list={['website-example', { dark: theme === 'dark' }]}>
+  <header><span>Website / {kind}</span><span>{theme === 'dark' ? 'Dunkel' : 'Hell'}</span></header>
+  <div class="website-stage"><Component {...componentProps}>{text}</Component></div>
+  <footer>Aus der Website extrahiert. Keine Tailwind-Abhängigkeit beim Verbraucher.</footer>
+</section>
+<style>
+.website-example { min-height:100vh;box-sizing:border-box;background:var(--page-bg);color:var(--text-primary);padding:24px;font-family:'Source Sans 3',Arial,sans-serif;--aw-font-heading:'Hanken Grotesk';--aw-font-sans:'Source Sans 3'; }
+header,footer { font-size:13px;color:var(--text-secondary); } header { display:flex;justify-content:space-between;gap:24px;border-bottom:1px solid var(--text-secondary);padding-bottom:16px; }
+.website-stage { position:relative;max-width:720px;min-height:240px;padding:48px 12px;box-sizing:border-box; }
+footer { padding-top:16px; }
+</style>

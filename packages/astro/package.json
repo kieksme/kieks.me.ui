@@ -1,6 +1,6 @@
 {
-  "name": "@kieksme/astro",
-  "version": "0.1.0",
+  "name": "@kieksme/kieksme-astro",
+  "version": "0.2.0",
   "type": "module",
   "files": [
     "src",
@@ -12,13 +12,14 @@
   "exports": {
     "./components/*": "./src/components/*.astro",
     "./styles.css": "./src/styles.css",
-    "./fonts.css": "./src/fonts.css"
+    "./fonts.css": "./src/fonts.css",
+    "./website/*": "./src/website/*.astro"
   },
   "peerDependencies": {
     "astro": ">=5 <8"
   },
   "dependencies": {
-    "@kieksme/tokens": "0.1.0",
+    "@kieksme/kieksme-tokens": "0.2.0",
     "@fontsource/hanken-grotesk": "5.3.0",
     "@fontsource/source-sans-3": "5.3.1"
   },

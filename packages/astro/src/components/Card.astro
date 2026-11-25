@@ -1,5 +1,15 @@
 ---
-interface Props { title?: string; text?: string; eyebrow?: string }
-const { title = 'KI verstehen. Sicher anwenden.', text = 'Wissen wird wirksam, wenn es im Alltag ankommt.', eyebrow = 'Lernen mit kieks.me' } = Astro.props;
+import type {HTMLAttributes} from 'astro/types';
+type Props=HTMLAttributes<'article'> & {
+ title?:string;text?:string;eyebrow?:string;titleHref?:string;headingLevel?:2|3;as?:'article'|'section'|'div';
+ variant?:'surface'|'muted'|'brand';padding?:'none'|'s'|'m'|'l';shadow?:'none'|'ink'|'aqua';
+};
+const {title,text,eyebrow,titleHref,headingLevel=2,as:Tag='article',variant='surface',padding='m',shadow='aqua',class:className='',...attributes}=Astro.props;
+const Title=headingLevel===3?'h3':'h2';
 ---
-<article class="ui-card"><p class="ui-eyebrow">{eyebrow}</p><h2>{title}</h2><p>{text}</p><slot /></article>
+<Tag {...attributes} class:list={['ui-card',`ui-card-${variant}`,`ui-card-padding-${padding}`,`ui-card-shadow-${shadow}`,className]}>
+ {Astro.slots.has('media')&&<div class="ui-card-media"><slot name="media" /></div>}
+ {(Astro.slots.has('header')||eyebrow||title)&&<header class="ui-card-header"><slot name="header">{eyebrow&&<p class="ui-eyebrow">{eyebrow}</p>}{title&&<Title>{titleHref?<a href={titleHref}>{title}</a>:title}</Title>}</slot></header>}
+ <div class="ui-card-content">{text&&<p>{text}</p>}<slot /></div>
+ {Astro.slots.has('footer')&&<footer class="ui-card-footer"><slot name="footer" /></footer>}
+</Tag>

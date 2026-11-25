@@ -1,0 +1,6 @@
+---
+interface Props {id:string;name:string;label:string;options:{value:string;label:string;disabled?:boolean}[];value?:string;required?:boolean;disabled?:boolean;hint?:string;error?:string;class?:string}
+const {id,name,label,options,value,required=false,disabled=false,hint,error,class:className=''}=Astro.props;
+const describedBy=[hint&&`${id}-hint`,error&&`${id}-error`].filter(Boolean).join(' ')||undefined;
+---
+<fieldset id={id} disabled={disabled} class:list={['ui-radio-group',className]} aria-describedby={describedBy} aria-invalid={error?'true':undefined}><legend class="ui-field-label">{label}{required&&<span aria-hidden="true"> *</span>}</legend>{options.map((option,index)=><label class="ui-radio-option" for={`${id}-${index}`}><input class="ui-radio-control" type="radio" id={`${id}-${index}`} name={name} value={option.value} checked={value===option.value} disabled={option.disabled} required={required} /><span class="ui-radio-label">{option.label}</span></label>)}{hint&&<p class="ui-field-hint" id={`${id}-hint`}>{hint}</p>}{error&&<p class="ui-field-error" id={`${id}-error`}>{error}</p>}</fieldset>

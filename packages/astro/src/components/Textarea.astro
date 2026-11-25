@@ -1,0 +1,6 @@
+---
+import type {HTMLAttributes} from 'astro/types';
+type Props=HTMLAttributes<'textarea'> & {value?:string};
+const {value,class:className='',...attributes}=Astro.props;
+---
+{value !== undefined ? <textarea {...attributes} class:list={['ui-textarea',className]}>{value}</textarea> : <textarea {...attributes} class:list={['ui-textarea',className]}><slot /></textarea>}

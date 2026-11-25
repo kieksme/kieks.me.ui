@@ -1,0 +1,121 @@
+---
+/** Pop Sticker / Badge — SPEC §2 rotations, §8 */
+export interface Props {
+  color?: 'aqua' | 'fuchsia' | 'purple' | 'navy';
+  shadow?: 'fuchsia' | 'aqua';
+  rotate?: number;
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+}
+
+const {
+  color = 'aqua',
+  shadow = color === 'fuchsia' ? 'aqua' : 'fuchsia',
+  rotate = 3,
+  size = 'md',
+  class: className = '',
+} = Astro.props;
+
+const bgs = {
+  navy: 'var(--pop-navy)',
+  aqua: 'var(--pop-aqua)',
+  fuchsia: 'var(--pop-fuchsia)',
+  purple: 'var(--pop-purple)',
+};
+/* Aqua+navy clears AA normal (≥4.5). Fuchsia/purple/navy stickers use bold ≥16px (AA large ≥3:1). */
+const text = color === 'aqua' ? 'var(--pop-navy)' : 'var(--pop-white)';
+const shadowColor = shadow === 'aqua' ? 'var(--pop-aqua)' : 'var(--pop-fuchsia)';
+const sizes = { sm: 'text-base px-3.5 py-2', md: 'text-base px-3.5 py-2', lg: 'text-xl px-3.5 py-2' };
+---
+
+<span
+  class:list={[
+    'pop-sticker motion-safe:pop-stamp inline-block font-heading font-extrabold leading-none border-[3px] border-[var(--ink)] w-fit',
+    sizes[size],
+    className,
+  ]}
+  style={`--pop-rotate: ${rotate}deg; background: ${bgs[color]}; color: ${text}; box-shadow: 4px 4px 0 0 ${shadowColor}; transform: rotate(${rotate}deg);`}
+>
+  <slot />
+</span>
+
+<style>
+  .pop-sticker {
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .pop-sticker:hover {
+    transform: rotate(calc(var(--pop-rotate, 0deg) * 2)) scale(1.05);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pop-sticker:hover {
+      transform: rotate(var(--pop-rotate, 0deg));
+    }
+  }
+</style>
+
+<!-- Utility rules extracted from kieks.me Tailwind 3; consumer independent. -->
+<style>
+@layer kieksme-website-reset {
+:where(*) { box-sizing: border-box; }
+:where([class*="border"]) { border-style: solid; border-width: 0; }
+:where(h1,h2,h3,h4,p,figure) { margin: 0; }
+:where(button) { background: transparent; text-align: inherit; font: inherit; }
+:where(a) { text-decoration: inherit; }
+}
+
+@layer kieksme-website-utilities {
+.inline-block {
+    display: inline-block
+}
+.w-fit {
+    width: fit-content
+}
+.transform {
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+}
+.border-\[3px\] {
+    border-width: 3px
+}
+.border-\[var\(--ink\)\] {
+    border-color: var(--ink)
+}
+.px-3\.5 {
+    padding-left: 0.875rem;
+    padding-right: 0.875rem
+}
+.py-2 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem
+}
+.font-heading {
+    font-family: var(--aw-font-heading, "Hanken Grotesk"), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+}
+.text-base {
+    font-size: 1rem;
+    line-height: 1.5rem
+}
+.text-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem
+}
+.font-extrabold {
+    font-weight: 800
+}
+.leading-none {
+    line-height: 1
+}
+.shadow {
+    --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+}
+.transition {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms
+}
+@media (prefers-reduced-motion: no-preference) {.motion-safe\:pop-stamp{animation:website-pop-stamp .25s cubic-bezier(.3,1.6,.5,1) both}}@keyframes website-pop-stamp {from{opacity:0;transform:scale(1.3) rotate(0deg)}to{opacity:1;transform:scale(1) rotate(var(--pop-rotate,0deg))}}
+}
+</style>

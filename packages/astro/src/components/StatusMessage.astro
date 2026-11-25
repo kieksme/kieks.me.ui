@@ -1,0 +1,6 @@
+---
+import type {HTMLAttributes} from 'astro/types';
+type Props=HTMLAttributes<'p'> & {variant?:'info'|'success'|'error';message?:string};
+const {variant='info',message,role=variant==='error'?'alert':'status',class:className='',...attributes}=Astro.props;
+---
+<p {...attributes} role={role} class:list={['ui-status',`ui-status-${variant}`,className]}>{message}<slot /></p>

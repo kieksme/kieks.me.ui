@@ -1,0 +1,5 @@
+---
+interface Props {previous?:{href:string;label:string};next?:{href:string;label:string};label?:string;class?:string}
+const {previous,next,label='Seitennavigation',class:className=''}=Astro.props;
+---
+<nav aria-label={label} class:list={['ui-prev-next',className]}>{previous&&<a href={previous.href} rel="prev"><span aria-hidden="true">← </span>{previous.label}</a>}{next&&<a href={next.href} rel="next">{next.label}<span aria-hidden="true"> →</span></a>}</nav>

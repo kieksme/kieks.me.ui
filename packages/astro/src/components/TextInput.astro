@@ -1,0 +1,6 @@
+---
+import type {HTMLAttributes} from 'astro/types';
+type Props=HTMLAttributes<'input'>;
+const {type='text',class:className='',...attributes}=Astro.props;
+---
+<input {...attributes} type={type} class:list={['ui-input',className]} />

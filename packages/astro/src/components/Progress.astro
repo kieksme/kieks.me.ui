@@ -1,0 +1,8 @@
+---
+import type {HTMLAttributes} from 'astro/types';
+type Props=Omit<HTMLAttributes<'progress'>,'value'|'max'> & {value:number;max?:number;label:string;showValue?:boolean};
+const {value,max=100,label,showValue=true,hidden,class:className='',...attributes}=Astro.props;
+const maximum=Number.isFinite(max)&&max>0?max:100;
+const current=Number.isFinite(value)?Math.min(maximum,Math.max(0,value)):0;
+---
+<div hidden={hidden} class:list={['ui-progress-wrap',className]}><div class="ui-progress-caption"><span>{label}</span>{showValue&&<span>{current} / {maximum}</span>}</div><progress {...attributes} class="ui-progress" value={current} max={maximum} aria-label={attributes['aria-label']||label}>{current} / {maximum}</progress></div>

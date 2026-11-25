@@ -1,0 +1,5 @@
+---
+interface Props {items:{label:string;value:string}[];class?:string}
+const {items,class:className=''}=Astro.props;
+---
+<dl class:list={['ui-metadata',className]}>{items.map(item=><div><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl>

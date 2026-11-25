@@ -1,16 +1,23 @@
 ---
 import '@fontsource/hanken-grotesk/700.css';
 import '@fontsource/source-sans-3/400.css';
-import Logo from '@kieksme/astro/components/Logo';
-import Heading from '@kieksme/astro/components/Heading';
-import Button from '@kieksme/astro/components/Button';
-import Card from '@kieksme/astro/components/Card';
-import Note from '@kieksme/astro/components/Note';
+import Logo from '@kieksme/kieksme-astro/components/Logo';
+import Heading from '@kieksme/kieksme-astro/components/Heading';
+import Button from '@kieksme/kieksme-astro/components/Button';
+import Card from '@kieksme/kieksme-astro/components/Card';
+import Note from '@kieksme/kieksme-astro/components/Note';
 const { kind = 'Button', theme = 'light', ...props } = Astro.props;
 const components = { Logo, Heading, Button, Card, Note };
 const Component = components[kind];
+const examples = {
+  Button: { label: 'Weiter zum Kurs' },
+  Heading: { text: 'Gute Ideen. Gemeinsam bauen.' },
+  Card: { title: 'KI verstehen. Sicher anwenden.', text: 'Wissen wird wirksam, wenn es im Alltag ankommt.', eyebrow: 'Lernen mit kieks.me' },
+  Note: { title: 'Gut zu wissen', text: 'Deine Kursunterlagen bleiben in deinem gebuchten Paket verfügbar.' },
+};
+const componentProps = { ...(examples[kind] ?? {}), ...props };
 ---
-<section data-theme={theme} class="example"><header><span>kieks.me / {kind}</span><span>{theme === 'dark' ? 'Dunkel' : 'Hell'}</span></header><div class="stage"><Component {...props}/></div><footer>Eine gemeinsame Basis für Website, Kurse und Produkte.</footer></section>
+<section data-theme={theme} class="example"><header><span>kieks.me / {kind}</span><span>{theme === 'dark' ? 'Dunkel' : 'Hell'}</span></header><div class="stage"><Component {...componentProps}/></div><footer>Eine gemeinsame Basis für Website, Kurse und Produkte.</footer></section>
 <style>
 .example {min-height:100vh;box-sizing:border-box;background:var(--page-bg);color:var(--text-primary);padding:24px;font-family:'Source Sans 3',Arial,sans-serif}
 header,footer {font-size:13px;color:var(--text-secondary)}header {display:flex;justify-content:space-between;border-bottom:1px solid var(--text-secondary);padding-bottom:16px;gap:24px}.stage {padding:48px 12px;min-height:200px;display:flex;align-items:center}footer {padding-top:16px}

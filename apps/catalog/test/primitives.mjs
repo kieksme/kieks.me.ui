@@ -1,0 +1,47 @@
+import assert from 'node:assert/strict';
+import { createServer } from 'node:http';
+import { readFile, stat } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { resolve, extname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { chromium } from 'playwright';
+const root=fileURLToPath(new URL('../dist/',import.meta.url));
+const prefix=(process.env.CATALOG_BASE||'/').replace(/\/$/,'');
+const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2'};
+const server=createServer(async(req,res)=>{try{const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);if(prefix&&!pathname.startsWith(prefix+'/'))throw Error('base');let p=resolve(root,'.'+pathname.slice(prefix.length));if(p!==root.slice(0,-1)&&!p.startsWith(root))throw Error('path');if((await stat(p)).isDirectory())p=resolve(p,'index.html');res.setHeader('Content-Type',mime[extname(p)]||'application/octet-stream');res.end(await readFile(p));}catch{res.writeHead(404).end()}});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));
+let browser;
+try{
+ browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),headless:true,args:['--no-sandbox']});
+ const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const url=(kind,variant='hell')=>`http://127.0.0.1:${server.address().port}${prefix}/stories/src/stories/${kind}/${variant}/`;
+ const open=async(kind,variant)=>assert.equal((await page.goto(url(kind,variant))).status(),200);
+ await open('form-field','fehler');
+ const input=page.getByLabel('Dein Name',{exact:false});await input.fill('Synthetische Person');
+ assert.equal(await input.getAttribute('required'),'');assert.equal(await input.getAttribute('aria-invalid'),'true');
+ for(const id of (await input.getAttribute('aria-describedby')).split(' '))assert.equal(await page.locator(`[id="${id}"]`).count(),1);
+ assert.equal(await input.inputValue(),'Synthetische Person');
+ console.log('PASS labelled form control with required/error/hint relationships');
+ await open('text-input','deaktiviert');assert.equal(await page.getByLabel('E-Mail').isDisabled(),true);
+ await open('select');assert.equal(await page.getByLabel('Kursart').inputValue(),'online');await page.getByLabel('Kursart').selectOption('self');assert.equal(await page.getByLabel('Kursart').inputValue(),'self');
+ await open('radio-group');const selected=page.getByLabel('Online mit Referent');await selected.focus();await page.keyboard.press('ArrowDown');assert.equal(await page.getByLabel('Selbstlernen').isChecked(),true);
+ await open('checkbox');await page.getByLabel('PDF-Unterlagen hinzufügen').check();assert.equal(await page.getByLabel('PDF-Unterlagen hinzufügen').isChecked(),true);
+ console.log('PASS native disabled/select/radio/checkbox behaviour');
+ await open('status-message');assert.equal(await page.getByRole('alert').count(),1);assert.equal(await page.getByRole('status').count(),2);
+ await open('progress');assert.equal(await page.getByRole('progressbar',{name:'Beantwortete Fragen'}).getAttribute('value'),'7');assert.equal(await page.getByRole('progressbar').getAttribute('max'),'20');
+ await open('progress','begrenzt');assert.equal(await page.getByRole('progressbar').getAttribute('value'),'20');
+ await open('accordion');const summary=page.getByText('Was brauche ich für den Kurs?',{exact:true});await summary.focus();await page.keyboard.press('Enter');assert.equal(await summary.evaluate(el=>el.parentElement.open),true);await page.keyboard.press('Enter');assert.equal(await summary.evaluate(el=>el.parentElement.open),false);
+ console.log('PASS feedback semantics, progress values and keyboard accordion');
+ await open('dialog');const first=page.getByRole('button',{name:'Informationen öffnen',exact:true});await first.click();assert.equal(await page.getByRole('dialog',{name:'Kursinformationen',exact:true}).isVisible(),true);assert.equal(await page.locator('#second-dialog').isVisible(),false);await page.keyboard.press('Escape');assert.equal(await first.evaluate(el=>el===document.activeElement),true);await page.getByRole('button',{name:'Zweiten Dialog öffnen'}).click();await page.getByRole('button',{name:'Schließen',exact:true}).click();assert.equal(await page.locator('dialog[open]').count(),0);
+ console.log('PASS independent native dialogs, Escape and focus return');
+ await open('copy-button');await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async text=>{window.__copied=text}}}));await page.getByRole('button',{name:'Kurskennung kopieren',exact:true}).click();await page.getByText('Kopiert.',{exact:true}).waitFor();assert.equal(await page.evaluate(()=>window.__copied),'synthetic-course-reference');await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw Error('denied')}}}));await page.getByRole('button',{name:'Weitere Kennung kopieren',exact:true}).click();await page.getByText('Kopieren nicht möglich.',{exact:true}).waitFor();assert.equal(await page.getByText('Kopiert.',{exact:true}).count(),1);
+ console.log('PASS independent copy feedback for success and denied clipboard');
+ await open('theme-toggle');await page.getByLabel('Farbdarstellung',{exact:true}).selectOption('dark');assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');assert.equal(await page.getByLabel('Weitere Farbdarstellung',{exact:true}).inputValue(),'dark');await page.getByLabel('Weitere Farbdarstellung',{exact:true}).selectOption('light');assert.equal(await page.getByLabel('Farbdarstellung',{exact:true}).inputValue(),'light');assert.equal(await page.locator('html').evaluate(el=>el.classList.contains('dark')),false);
+ console.log('PASS multiple theme toggles remain synchronised');
+ await open('card-variants','brand');assert.equal(await page.locator('.ui-card').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(30, 42, 69)');assert.equal(await page.getByRole('heading').count(),1);assert.equal(await page.getByRole('link',{name:'Kurs ansehen'}).count(),1);
+ await open('card-variants','kompakt');assert.equal(await page.locator('.ui-card').evaluate(el=>getComputedStyle(el).padding),'16px');assert.equal(await page.locator('.ui-card').evaluate(el=>getComputedStyle(el).boxShadow),'none');
+ await open('button-variants','klein');const small=await page.getByRole('button').evaluate(el=>getComputedStyle(el).minHeight);await open('button-variants','gross');const large=await page.getByRole('button').evaluate(el=>getComputedStyle(el).minHeight);assert.notEqual(small,large);
+ for(const theme of ['hell','dunkel']){await page.setViewportSize({width:375,height:800});await open('form-field',theme);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);}
+ await open('hidden-state','hidden');assert.equal(await page.locator('[hidden]').count(),8);for(const el of await page.locator('[hidden]').all())assert.equal(await el.isVisible(),false);console.log('PASS native hidden controls/cards/progress retain hidden state');
+ assert.deepEqual(errors,[]);console.log('PASS Card/Button variants and mobile form layouts without script errors');
+}finally{await browser?.close();await new Promise(r=>server.close(r));}

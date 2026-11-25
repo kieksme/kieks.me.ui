@@ -9,7 +9,7 @@ await mkdir(output, { recursive: true });
 const manifests = await Promise.all(packageNames.map(async (name) => JSON.parse(await readFile(`packages/${name}/package.json`, 'utf8'))));
 const version = manifests[0].version;
 if (manifests.some((p) => p.version !== version || p.private || p.publishConfig?.access !== 'public')) throw new Error('Both public packages must have the same explicit version and public publishConfig');
-if (manifests[1].dependencies['@kieksme/tokens'] !== version) throw new Error('Astro must depend on the exact released token version');
+if (manifests[1].dependencies['@kieksme/kieksme-tokens'] !== version) throw new Error('Astro must depend on the exact released token version');
 if (process.env.GITHUB_REF_TYPE === 'tag' && process.env.GITHUB_REF_NAME !== `ui-v${version}`) throw new Error('Release tag must match ui-v<package version>');
 const root = JSON.parse(await readFile('package.json', 'utf8'));
 const catalog = JSON.parse(await readFile('apps/catalog/package.json', 'utf8'));
@@ -17,7 +17,7 @@ if (!root.private || !catalog.private) throw new Error('Workspace root and catal
 const run = (args) => execFileSync('npm', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'] });
 const packs = [];
 for (const name of packageNames) {
-  const [pack] = JSON.parse(run(['pack', `--workspace=@kieksme/${name}`, '--json', '--pack-destination', output]));
+  const [pack] = JSON.parse(run(['pack', `--workspace=${manifests[packageNames.indexOf(name)].name}`, '--json', '--pack-destination', output]));
   packs.push(pack);
   console.log(`${pack.name}@${pack.version}: ${pack.files.length} packed files`);
 }

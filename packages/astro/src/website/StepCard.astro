@@ -1,0 +1,148 @@
+---
+export interface Props {
+  num: string;
+  title: string;
+  description: string;
+  accent: 'aqua' | 'fuchsia' | 'purple' | 'navy';
+  rotate?: number;
+  class?: string;
+}
+
+const { num, title, description, accent, rotate = 1.5, class: className = '' } = Astro.props;
+const colors = {
+  aqua: 'var(--pop-aqua)',
+  fuchsia: 'var(--pop-fuchsia)',
+  navy: 'var(--pop-navy)',
+  purple: 'var(--pop-purple)',
+};
+const numText = accent === 'purple' || accent === 'navy' || accent === 'fuchsia' ? '#fff' : 'var(--pop-navy)';
+---
+
+<article
+  class:list={[
+    'pop-step-card flex flex-col gap-2.5 bg-[var(--surface)] border-[3px] border-[var(--ink)] pt-[22px] pb-6 px-[22px]',
+    className,
+  ]}
+  style={`--pop-rotate: ${rotate}deg; transform: rotate(${rotate}deg); box-shadow: 8px 8px 0 0 ${colors[accent]};`}
+>
+  <span
+    class="inline-flex w-fit border-[3px] border-[var(--ink)] px-3 py-0.5 font-heading font-black text-[44px] leading-none"
+    style={`background: ${colors[accent]}; color: ${numText};`}
+  >
+    {num}
+  </span>
+  <h3 class="font-heading font-extrabold text-2xl leading-[30px] lowercase" style="color: var(--text-primary);">
+    {title}
+  </h3>
+  <p class="text-lg leading-7" style="color: var(--text-secondary);">{description}</p>
+</article>
+
+<style>
+  .pop-step-card {
+    transition: transform 0.25s ease;
+  }
+  .pop-step-card:hover {
+    transform: rotate(0deg);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pop-step-card:hover {
+      transform: rotate(var(--pop-rotate, 0deg));
+    }
+  }
+</style>
+
+<!-- Utility rules extracted from kieks.me Tailwind 3; consumer independent. -->
+<style>
+@layer kieksme-website-reset {
+:where(*) { box-sizing: border-box; }
+:where([class*="border"]) { border-style: solid; border-width: 0; }
+:where(h1,h2,h3,h4,p,figure) { margin: 0; }
+:where(button) { background: transparent; text-align: inherit; font: inherit; }
+:where(a) { text-decoration: inherit; }
+}
+
+@layer kieksme-website-utilities {
+.flex {
+    display: flex
+}
+.inline-flex {
+    display: inline-flex
+}
+.w-fit {
+    width: fit-content
+}
+.transform {
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+}
+.flex-col {
+    flex-direction: column
+}
+.gap-2\.5 {
+    gap: 0.625rem
+}
+.border-\[3px\] {
+    border-width: 3px
+}
+.border-\[var\(--ink\)\] {
+    border-color: var(--ink)
+}
+.bg-\[var\(--surface\)\] {
+    background-color: var(--surface)
+}
+.px-3 {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem
+}
+.px-\[22px\] {
+    padding-left: 22px;
+    padding-right: 22px
+}
+.py-0\.5 {
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem
+}
+.pb-6 {
+    padding-bottom: 1.5rem
+}
+.pt-\[22px\] {
+    padding-top: 22px
+}
+.font-heading {
+    font-family: var(--aw-font-heading, "Hanken Grotesk"), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+}
+.text-2xl {
+    font-size: 1.5rem;
+    line-height: 2rem
+}
+.text-\[44px\] {
+    font-size: 44px
+}
+.text-lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem
+}
+.font-black {
+    font-weight: 900
+}
+.font-extrabold {
+    font-weight: 800
+}
+.lowercase {
+    text-transform: lowercase
+}
+.leading-7 {
+    line-height: 1.75rem
+}
+.leading-\[30px\] {
+    line-height: 30px
+}
+.leading-none {
+    line-height: 1
+}
+.transition {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms
+}
+}
+</style>

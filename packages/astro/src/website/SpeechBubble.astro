@@ -1,0 +1,45 @@
+---
+export interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div
+  class:list={['pop-speech bg-[var(--surface)] border-4 border-[var(--ink)] px-9 py-7', className]}
+  style="box-shadow: 10px 10px 0 0 var(--pop-aqua);"
+>
+  <slot />
+</div>
+
+<!-- Utility rules extracted from kieks.me Tailwind 3; consumer independent. -->
+<style>
+@layer kieksme-website-reset {
+:where(*) { box-sizing: border-box; }
+:where([class*="border"]) { border-style: solid; border-width: 0; }
+:where(h1,h2,h3,h4,p,figure) { margin: 0; }
+:where(button) { background: transparent; text-align: inherit; font: inherit; }
+:where(a) { text-decoration: inherit; }
+}
+
+@layer kieksme-website-utilities {
+.border-4 {
+    border-width: 4px
+}
+.border-\[var\(--ink\)\] {
+    border-color: var(--ink)
+}
+.bg-\[var\(--surface\)\] {
+    background-color: var(--surface)
+}
+.px-9 {
+    padding-left: 2.25rem;
+    padding-right: 2.25rem
+}
+.py-7 {
+    padding-top: 1.75rem;
+    padding-bottom: 1.75rem
+}
+}
+</style>

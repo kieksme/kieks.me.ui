@@ -1,6 +1,7 @@
 ---
-interface Props { text?: string; level?: 1 | 2 | 3; accent?: boolean }
-const { text = 'Gute Ideen. Gemeinsam bauen.', level = 2, accent = false } = Astro.props;
+import type { HTMLAttributes } from 'astro/types';
+export type Props = HTMLAttributes<'h2'> & { text?: string; level?: 1 | 2 | 3 | 4 | 5 | 6; accent?: boolean };
+const { text, level = 2, accent = false, class: className, ...attributes } = Astro.props;
 const Tag = `h${level}`;
 ---
-<Tag class:list={['ui-heading', { 'ui-heading-accent': accent }]}>{text}<slot /></Tag>
+<Tag {...attributes} class:list={['ui-heading', { 'ui-heading-accent': accent }, className]}>{Astro.slots.has('default') ? <slot /> : text}</Tag>

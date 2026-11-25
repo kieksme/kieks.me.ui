@@ -1,0 +1,30 @@
+---
+interface Props {label?:string;persist?:boolean;storageKey?:string;class?:string}
+const {label='Farbdarstellung',persist=false,storageKey='kieksme-theme',class:className=''}=Astro.props;
+---
+<label class:list={['ui-theme-toggle',className]}><span>{label}</span><select class="ui-select" data-ui-theme-toggle data-persist={persist?'true':'false'} data-storage-key={storageKey} aria-label={label}><option value="light">Hell</option><option value="dark">Dunkel</option><option value="system">System</option></select></label>
+<script>
+ function initialiseThemeToggles(){
+  const toggles=document.querySelectorAll<HTMLSelectElement>('[data-ui-theme-toggle]');
+  const system=matchMedia('(prefers-color-scheme: dark)');
+  function apply(mode:string,persist:boolean,key:string){
+   const dark=mode==='dark'||(mode==='system'&&system.matches);
+   document.documentElement.dataset.theme=dark?'dark':'light';document.documentElement.classList.toggle('dark',dark);
+   document.documentElement.dataset.uiThemeMode=mode;
+   document.querySelectorAll<HTMLSelectElement>('[data-ui-theme-toggle]').forEach(t=>t.value=mode);
+   if(persist){try{localStorage.setItem(key,mode)}catch{}}
+   document.dispatchEvent(new CustomEvent('ui:theme-change',{detail:{mode,theme:dark?'dark':'light'}}));
+  }
+  toggles.forEach(toggle=>{
+   if(toggle.dataset.ready)return;toggle.dataset.ready='true';
+   let mode=document.documentElement.dataset.uiThemeMode;
+   if(!mode&&toggle.dataset.persist==='true'){try{mode=localStorage.getItem(toggle.dataset.storageKey!)||undefined}catch{}}
+   if(!mode||!['light','dark','system'].includes(mode))mode=document.documentElement.dataset.theme|| (document.documentElement.classList.contains('dark')?'dark':'system');
+   toggle.value=mode;
+   toggle.addEventListener('change',()=>apply(toggle.value,toggle.dataset.persist==='true',toggle.dataset.storageKey!));
+   if(!document.documentElement.dataset.uiThemeMode)apply(mode,false,toggle.dataset.storageKey!);
+  });
+  if(!document.documentElement.dataset.uiThemeListener){document.documentElement.dataset.uiThemeListener='true';system.addEventListener('change',()=>{if(document.documentElement.dataset.uiThemeMode==='system')apply('system',false,'')});}
+ }
+ initialiseThemeToggles();document.addEventListener('astro:page-load',initialiseThemeToggles);
+</script>

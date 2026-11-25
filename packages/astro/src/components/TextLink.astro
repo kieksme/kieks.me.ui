@@ -1,0 +1,6 @@
+---
+import type {HTMLAttributes} from 'astro/types';
+type Props=HTMLAttributes<'a'> & {href:string;arrow?:boolean};
+const {arrow=true,class:className='',...attributes}=Astro.props;
+---
+<a {...attributes} class:list={['ui-text-link',className]}><span><slot /></span>{arrow&&<span aria-hidden="true" class="ui-text-link-arrow">→</span>}</a>

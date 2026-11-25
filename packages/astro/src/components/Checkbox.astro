@@ -1,0 +1,7 @@
+---
+import type {HTMLAttributes} from 'astro/types';
+type Props=Omit<HTMLAttributes<'input'>,'type'> & {id:string;label:string;hint?:string;error?:string};
+const {id,label,hint,error,class:className='',...attributes}=Astro.props;
+const describedBy=[attributes['aria-describedby'],hint&&`${id}-hint`,error&&`${id}-error`].filter(Boolean).join(' ')||undefined;
+---
+<div class:list={['ui-field',className]}><label class="ui-check-option" for={id}><input {...attributes} id={id} type="checkbox" class="ui-check-control" aria-describedby={describedBy} aria-invalid={error?'true':attributes['aria-invalid']} /><span>{label}</span></label>{hint&&<p class="ui-field-hint" id={`${id}-hint`}>{hint}</p>}{error&&<p class="ui-field-error" id={`${id}-error`}>{error}</p>}</div>

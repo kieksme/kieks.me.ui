@@ -1,0 +1,9 @@
+---
+interface Props {value:string;label?:string;successMessage?:string;errorMessage?:string;class?:string}
+const {value,label='Kopieren',successMessage='Kopiert.',errorMessage='Kopieren nicht möglich.',class:className=''}=Astro.props;
+---
+<span data-ui-copy data-value={value} data-success={successMessage} data-error={errorMessage} class:list={['ui-copy',className]}><button type="button" class="ui-button ui-button-secondary" data-ui-copy-button>{label}</button><span class="ui-copy-feedback" role="status" aria-live="polite"></span></span>
+<script>
+ function initialiseCopyButtons(){document.querySelectorAll<HTMLElement>('[data-ui-copy]').forEach(container=>{if(container.dataset.ready)return;container.dataset.ready='true';const button=container.querySelector<HTMLButtonElement>('[data-ui-copy-button]')!;const status=container.querySelector<HTMLElement>('[role=status]')!;button.addEventListener('click',async()=>{button.disabled=true;status.textContent='';try{if(!navigator.clipboard)throw new Error('clipboard unavailable');await navigator.clipboard.writeText(container.dataset.value||'');status.textContent=container.dataset.success!}catch{status.textContent=container.dataset.error!}finally{button.disabled=false}});});}
+ initialiseCopyButtons();document.addEventListener('astro:page-load',initialiseCopyButtons);
+</script>

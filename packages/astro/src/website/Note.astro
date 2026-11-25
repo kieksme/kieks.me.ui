@@ -1,0 +1,82 @@
+---
+/** Preview-only placeholder note — SPEC §5.4 (not on production) */
+export interface Props {
+  label?: string;
+  class?: string;
+}
+
+const { label = 'Offener Punkt', class: className = '' } = Astro.props;
+/** Visible only in local DEV or when PUBLIC_SHOW_NOTES=true (e.g. Netlify deploy-preview). */
+const show = import.meta.env.DEV === true || import.meta.env.PUBLIC_SHOW_NOTES === 'true';
+---
+
+{
+  show && (
+    <aside
+      class:list={['my-4 px-3.5 py-2.5 text-sm border-2 border-dashed', className]}
+      style="background: var(--note-bg); color: var(--note-text); border-color: var(--note-text);"
+      data-placeholder="true"
+      role="note"
+    >
+      <p class="font-heading font-extrabold text-sm">{label}</p>
+      <div class="mt-1 font-sans text-[15px] leading-relaxed">
+        <slot />
+      </div>
+    </aside>
+  )
+}
+<!-- TODO notes ({label}) render only when DEV or PUBLIC_SHOW_NOTES=true -->
+
+<!-- Utility rules extracted from kieks.me Tailwind 3; consumer independent. -->
+<style>
+@layer kieksme-website-reset {
+:where(*) { box-sizing: border-box; }
+:where([class*="border"]) { border-style: solid; border-width: 0; }
+:where(h1,h2,h3,h4,p,figure) { margin: 0; }
+:where(button) { background: transparent; text-align: inherit; font: inherit; }
+:where(a) { text-decoration: inherit; }
+}
+
+@layer kieksme-website-utilities {
+.my-4 {
+    margin-top: 1rem;
+    margin-bottom: 1rem
+}
+.mt-1 {
+    margin-top: 0.25rem
+}
+.border-2 {
+    border-width: 2px
+}
+.border-dashed {
+    border-style: dashed
+}
+.px-3\.5 {
+    padding-left: 0.875rem;
+    padding-right: 0.875rem
+}
+.py-2\.5 {
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem
+}
+.font-heading {
+    font-family: var(--aw-font-heading, "Hanken Grotesk"), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+}
+.font-sans {
+    font-family: var(--aw-font-sans, "Source Sans 3"), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+}
+.text-\[15px\] {
+    font-size: 15px
+}
+.text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem
+}
+.font-extrabold {
+    font-weight: 800
+}
+.leading-relaxed {
+    line-height: 1.625
+}
+}
+</style>

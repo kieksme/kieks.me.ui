@@ -8,13 +8,14 @@ const tar = (prefix) => resolve(releaseDir, packages.find((file) => file.startsW
 for (const version of ['5.18.2', '7.4.13']) {
   const cwd = await mkdtemp(join(tmpdir(), 'kieksme-consumer-'));
   await mkdir(join(cwd, 'src/pages'), { recursive: true });
-  await writeFile(join(cwd, 'package.json'), JSON.stringify({ name: 'isolated-ui-consumer', private: true, type: 'module', scripts: { build: 'astro build' }, dependencies: { astro: version, '@kieksme/tokens': `file:${tar('kieksme-tokens-')}`, '@kieksme/astro': `file:${tar('kieksme-astro-')}` } }));
-  await writeFile(join(cwd, 'src/pages/index.astro'), `---\nimport '@kieksme/tokens/css';\nimport '@kieksme/astro/styles.css';\nimport '@kieksme/astro/fonts.css';\nimport Logo from '@kieksme/astro/components/Logo';\nimport Heading from '@kieksme/astro/components/Heading';\nimport Card from '@kieksme/astro/components/Card';\n---\n<html lang="de" data-theme="dark"><head><meta charset="utf-8"/><title>Consumer smoke</title></head><body><Logo/><Heading text="Paketprüfung"/><Card title="Isolierter Verbraucher"/></body></html>`);
+  await writeFile(join(cwd, 'package.json'), JSON.stringify({ name: 'isolated-ui-consumer', private: true, type: 'module', scripts: { build: 'astro build' }, dependencies: { astro: version, '@kieksme/kieksme-tokens': `file:${tar('kieksme-kieksme-tokens-')}`, '@kieksme/kieksme-astro': `file:${tar('kieksme-kieksme-astro-')}` } }));
+  await writeFile(join(cwd, 'src/pages/index.astro'), `---\nimport '@kieksme/kieksme-tokens/css';\nimport '@kieksme/kieksme-astro/styles.css';\nimport '@kieksme/kieksme-astro/fonts.css';\nimport Logo from '@kieksme/kieksme-astro/components/Logo';\nimport Heading from '@kieksme/kieksme-astro/components/Heading';\nimport Card from '@kieksme/kieksme-astro/components/Card';\nimport FormField from '@kieksme/kieksme-astro/components/FormField';\nimport TextInput from '@kieksme/kieksme-astro/components/TextInput';\nimport Progress from '@kieksme/kieksme-astro/components/Progress';\nimport WebsiteHeading from '@kieksme/kieksme-astro/website/Heading';\n---\n<html lang="de" data-theme="dark"><head><meta charset="utf-8"/><title>Consumer smoke</title></head><body><Logo/><Heading text="Paketprüfung"/><Card title="Isolierter Verbraucher" variant="muted" shadow="none"/><WebsiteHeading size="s">Website-Stil</WebsiteHeading><FormField id="consumer-email" label="E-Mail" required><TextInput id="consumer-email" name="email" type="email" required /></FormField><Progress value={2} max={5} label="Lernfortschritt" /></body></html>`);
   const env = { ...process.env, ASTRO_TELEMETRY_DISABLED: '1', XDG_CACHE_HOME: process.env.XDG_CACHE_HOME || join(cwd, '.cache'), XDG_CONFIG_HOME: process.env.XDG_CONFIG_HOME || join(cwd, '.config') };
   execFileSync('npm', ['install', '--ignore-scripts', '--no-audit', '--no-fund'], { cwd, env, stdio: 'inherit' });
   execFileSync('npm', ['run', 'build'], { cwd, env, stdio: 'inherit' });
   const html = await readFile(join(cwd, 'dist/index.html'), 'utf8');
   if (!html.includes('Paketprüfung') || !html.includes('Isolierter Verbraucher') || !html.includes('alt="kieks.me"')) throw new Error(`Missing rendered component or bundled asset in Astro ${version}`);
+  if (!html.includes('Website-Stil') || !html.includes('consumer-email') || !html.includes('aria-label="Lernfortschritt"')) throw new Error(`Missing website or form primitive in Astro ${version}`);
   const images = [...html.matchAll(/<img[^>]+src="([^"]+)"/g)].map((m) => m[1]);
   if (images.length !== 2) throw new Error(`Missing light/dark logo pair in Astro ${version}`);
   for (const src of images) {
@@ -27,7 +28,7 @@ for (const version of ['5.18.2', '7.4.13']) {
   const cssParts = [...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1]);
   for (const href of [...html.matchAll(/<link[^>]+href="([^"]+\.css)"/g)].map((m) => m[1])) cssParts.push(await readFile(join(cwd, 'dist', href.replace(/^\//, '')), 'utf8'));
   const css = cssParts.join('\n');
-  if (!css.includes('--pop-aqua') || !css.includes('ui-heading')) throw new Error(`Missing package CSS in Astro ${version}`);
+  if (!css.includes('--pop-aqua') || !css.includes('ui-heading') || !css.includes('ui-field')) throw new Error(`Missing package CSS in Astro ${version}`);
   const builtAssets = await readdir(join(cwd, 'dist/_astro'));
   if (!builtAssets.some((name) => name.includes('hanken-grotesk') && name.endsWith('.woff2')) || !builtAssets.some((name) => name.includes('source-sans-3') && name.endsWith('.woff2'))) throw new Error(`Missing self-hosted fonts in Astro ${version}`);
   console.log(`Verified actual tarball consumer: Astro ${version}`);

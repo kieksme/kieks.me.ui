@@ -1,6 +1,6 @@
 {
   "name": "@kieksme/design-system-workspace",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -12,9 +12,9 @@
     "node": ">=24"
   },
   "scripts": {
-    "build": "npm run build --workspace @kieksme/tokens && npm run build --workspace @kieksme/catalog",
-    "test": "npm run test --workspace @kieksme/tokens",
-    "dev": "npm run build --workspace @kieksme/tokens && npm run dev --workspace @kieksme/catalog",
+    "build": "npm run build --workspace @kieksme/kieksme-tokens && npm run build --workspace @kieksme/catalog",
+    "test": "npm run test --workspace @kieksme/kieksme-tokens",
+    "dev": "npm run build --workspace @kieksme/kieksme-tokens && npm run dev --workspace @kieksme/catalog",
     "test:browser": "npm run test:browser --workspace @kieksme/catalog"
   }
 }

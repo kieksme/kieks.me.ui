@@ -1,0 +1,6 @@
+---
+import type {HTMLAttributes} from 'astro/types';
+type Props=HTMLAttributes<'select'> & {options?:{value:string;label:string;disabled?:boolean}[];value?:string;placeholder?:string};
+const {options=[],value,placeholder,class:className='',...attributes}=Astro.props;
+---
+<select {...attributes} class:list={['ui-select',className]}>{placeholder&&<option value="" selected={value===undefined||value===''}>{placeholder}</option>}{options.map(option=><option value={option.value} disabled={option.disabled} selected={value===option.value}>{option.label}</option>)}<slot /></select>

@@ -1,0 +1,9 @@
+---
+interface Props {id:string;title:string;triggerLabel?:string;closeLabel?:string;class?:string}
+const {id,title,triggerLabel='Öffnen',closeLabel='Schließen',class:className=''}=Astro.props;
+---
+<div data-ui-dialog class:list={['ui-dialog-container',className]}><button class="ui-button ui-button-secondary" type="button" data-ui-dialog-open aria-haspopup="dialog" aria-controls={id}><slot name="trigger">{triggerLabel}</slot></button><dialog id={id} class="ui-dialog" aria-labelledby={`${id}-title`}><header><h2 id={`${id}-title`}>{title}</h2><button class="ui-dialog-close" type="button" data-ui-dialog-close aria-label={closeLabel}>×</button></header><div><slot /></div></dialog></div>
+<script>
+ function initialiseDialogs(){document.querySelectorAll<HTMLElement>('[data-ui-dialog]').forEach(container=>{if(container.dataset.ready)return;container.dataset.ready='true';const dialog=container.querySelector('dialog')!;const trigger=container.querySelector<HTMLButtonElement>('[data-ui-dialog-open]')!;trigger.addEventListener('click',()=>{if(!dialog.open)dialog.showModal()});container.querySelector('[data-ui-dialog-close]')!.addEventListener('click',()=>dialog.close());dialog.addEventListener('close',()=>trigger.focus());});}
+ initialiseDialogs();document.addEventListener('astro:page-load',initialiseDialogs);
+</script>

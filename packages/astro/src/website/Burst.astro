@@ -1,0 +1,41 @@
+---
+import heroBurst from './assets/661-962_hero-art-dark__imgBurstAqua.svg?url';
+import cspBurst from './assets/654-1669_csp-art__imgBurst.svg?url';
+import mcpBurst from './assets/659-963_ki-hero-art-mcp__imgBurst.svg?url';
+
+export interface Props {
+  variant?: 'hero' | 'csp' | 'mcp';
+  spin?: boolean;
+  class?: string;
+  width?: number;
+  height?: number;
+}
+
+const { variant = 'hero', spin = true, class: className = '', width = 400, height = 400 } = Astro.props;
+const src = variant === 'csp' ? cspBurst : variant === 'mcp' ? mcpBurst : heroBurst;
+---
+
+<img
+  src={src}
+  alt=""
+  class:list={[spin && 'motion-safe:pop-spin-slow', className]}
+  width={width}
+  height={height}
+  decoding="async"
+/>
+
+<!-- Utility rules extracted from kieks.me Tailwind 3; consumer independent. -->
+<style>
+@layer kieksme-website-reset {
+:where(*) { box-sizing: border-box; }
+:where([class*="border"]) { border-style: solid; border-width: 0; }
+:where(h1,h2,h3,h4,p,figure) { margin: 0; }
+:where(button) { background: transparent; text-align: inherit; font: inherit; }
+:where(a) { text-decoration: inherit; }
+}
+
+@layer kieksme-website-utilities {
+
+@media (prefers-reduced-motion: no-preference) {.motion-safe\:pop-spin-slow{animation:website-pop-spin 50s linear infinite}}@keyframes website-pop-spin {to {transform:rotate(360deg)}}
+}
+</style>

@@ -1,5 +1,6 @@
 ---
-interface Props { title?: string; text?: string }
-const { title = 'Gut zu wissen', text = 'Deine Kursunterlagen bleiben in deinem gebuchten Paket verfügbar.' } = Astro.props;
+import type { HTMLAttributes } from 'astro/types';
+export type Props = HTMLAttributes<'aside'> & { title?: string; text?: string };
+const { title, text, class: className, ...attributes } = Astro.props;
 ---
-<aside class="ui-note"><strong>{title}</strong><p>{text}</p><slot /></aside>
+<aside {...attributes} class:list={['ui-note', className]}>{title && <strong>{title}</strong>}{text && <p>{text}</p>}<slot /></aside>

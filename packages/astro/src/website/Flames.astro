@@ -1,0 +1,61 @@
+---
+import flamesRot from './assets/655-1038_flammen-rot__imgFlammenRot.svg?url';
+import flamesAqua from './assets/655-1040_flammen-aqua-original.svg?url';
+import flamesRotMobile from './assets/658-1154_flammen-rot-mobile.svg?url';
+import flamesAquaMobile from './assets/658-1156_flammen-aqua-mobile.svg?url';
+
+export interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div class:list={['pop-cta-flames relative w-full pointer-events-none', className]} aria-hidden="true">
+  <picture class="block">
+    <source media="(max-width: 767px)" srcset={flamesRotMobile} width="390" height="130" />
+    <img src={flamesRot} alt="" class="block w-full h-auto" width="1440" height="220" decoding="async" />
+  </picture>
+  <picture class="absolute bottom-0 left-0 block w-full">
+    <source media="(max-width: 767px)" srcset={flamesAquaMobile} width="390" height="90" />
+    <img src={flamesAqua} alt="" class="block w-full h-auto" width="1440" height="150" decoding="async" />
+  </picture>
+</div>
+
+<!-- Utility rules extracted from kieks.me Tailwind 3; consumer independent. -->
+<style>
+@layer kieksme-website-reset {
+:where(*) { box-sizing: border-box; }
+:where([class*="border"]) { border-style: solid; border-width: 0; }
+:where(h1,h2,h3,h4,p,figure) { margin: 0; }
+:where(button) { background: transparent; text-align: inherit; font: inherit; }
+:where(a) { text-decoration: inherit; }
+}
+
+@layer kieksme-website-utilities {
+.pointer-events-none {
+    pointer-events: none
+}
+.absolute {
+    position: absolute
+}
+.relative {
+    position: relative
+}
+.bottom-0 {
+    bottom: 0px
+}
+.left-0 {
+    left: 0px
+}
+.block {
+    display: block
+}
+.h-auto {
+    height: auto
+}
+.w-full {
+    width: 100%
+}
+}
+</style>

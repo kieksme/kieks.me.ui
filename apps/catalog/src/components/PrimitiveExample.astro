@@ -1,0 +1,48 @@
+---
+import '@fontsource/hanken-grotesk/700.css';
+import '@fontsource/source-sans-3/400.css';
+import Lead from '@kieksme/kieksme-astro/components/Lead';
+import TextLink from '@kieksme/kieksme-astro/components/TextLink';
+import FormField from '@kieksme/kieksme-astro/components/FormField';
+import TextInput from '@kieksme/kieksme-astro/components/TextInput';
+import Textarea from '@kieksme/kieksme-astro/components/Textarea';
+import Select from '@kieksme/kieksme-astro/components/Select';
+import Checkbox from '@kieksme/kieksme-astro/components/Checkbox';
+import RadioGroup from '@kieksme/kieksme-astro/components/RadioGroup';
+import StatusMessage from '@kieksme/kieksme-astro/components/StatusMessage';
+import Progress from '@kieksme/kieksme-astro/components/Progress';
+import Accordion from '@kieksme/kieksme-astro/components/Accordion';
+import EmptyState from '@kieksme/kieksme-astro/components/EmptyState';
+import PrevNextNavigation from '@kieksme/kieksme-astro/components/PrevNextNavigation';
+import MetadataList from '@kieksme/kieksme-astro/components/MetadataList';
+import ThemeToggle from '@kieksme/kieksme-astro/components/ThemeToggle';
+import Dialog from '@kieksme/kieksme-astro/components/Dialog';
+import CopyButton from '@kieksme/kieksme-astro/components/CopyButton';
+import Card from '@kieksme/kieksme-astro/components/Card';
+import Button from '@kieksme/kieksme-astro/components/Button';
+const {kind='Lead',theme='light',error=false,disabled=false,variant='surface',padding='m',shadow='aqua',size='m',progressValue=7,progressMax=20}=Astro.props;
+const options=[{value:'on-site',label:'Vor Ort'},{value:'online',label:'Online mit Referent'},{value:'self',label:'Selbstlernen'}];
+---
+<section data-theme={theme} class="primitive-example"><header>kieks.me / {kind} / {theme}</header><div class="primitive-stage">
+ {kind==='HiddenState'&&<div><TextInput hidden aria-label="Verborgene Eingabe"/><Textarea hidden aria-label="Verborgener Text"/><Select hidden aria-label="Verborgene Auswahl"/><TextLink hidden href="#hidden">Verborgener Link</TextLink><StatusMessage hidden message="Verborgen"/><Progress hidden value={1} max={2} label="Verborgener Fortschritt"/><Button hidden>Verborgene Aktion</Button><Card hidden title="Verborgene Karte"/></div>}
+ {kind==='Lead'&&<Lead>Gemeinsame Komponenten für Website, Schulungen und digitale Produkte.</Lead>}
+ {kind==='TextLink'&&<TextLink href="#details">Mehr zum Kurs</TextLink>}
+ {kind==='FormField'&&<FormField id="participant-name" label="Dein Name" hint="So erscheint dein Name auf der Bestätigung." error={error?'Bitte einen Namen eingeben.':undefined} required><TextInput id="participant-name" name="name" required autocomplete="name" disabled={disabled} aria-describedby={error?'participant-name-hint participant-name-error':'participant-name-hint'} aria-invalid={error?'true':undefined}/></FormField>}
+ {kind==='TextInput'&&<FormField id="email" label="E-Mail"><TextInput id="email" name="email" type="email" placeholder="name@example.invalid" disabled={disabled}/></FormField>}
+ {kind==='Textarea'&&<FormField id="question" label="Deine Frage"><Textarea id="question" name="question" rows={4} disabled={disabled} value="Wie funktioniert die Lernkontrolle?"/></FormField>}
+ {kind==='Select'&&<FormField id="format" label="Kursart"><Select id="format" name="format" options={options} value="online" disabled={disabled}/></FormField>}
+ {kind==='Checkbox'&&<Checkbox id="materials" name="materials" label="PDF-Unterlagen hinzufügen" hint="Optionales Zusatzpaket." disabled={disabled}/>}
+ {kind==='RadioGroup'&&<RadioGroup id="delivery" name="delivery" label="Wie möchtest du lernen?" options={options} value="online" required disabled={disabled}/>}
+ {kind==='StatusMessage'&&<div class="primitive-stack"><StatusMessage variant="info" message="Deine Anmeldung wird geprüft."/><StatusMessage variant="success" message="Dein Platz ist reserviert."/><StatusMessage variant="error" message="Bitte prüfe deine Angaben."/></div>}
+ {kind==='Progress'&&<Progress id="course-progress" value={progressValue} max={progressMax} label="Beantwortete Fragen"/>}
+ {kind==='Accordion'&&<div class="primitive-stack"><Accordion title="Was brauche ich für den Kurs?">Einen Computer und Zugang zu den Kursmaterialien.</Accordion><Accordion title="Wie funktioniert die Lernkontrolle?">Beantworte die Fragen in deinem eigenen Tempo.</Accordion></div>}
+ {kind==='EmptyState'&&<EmptyState title="Noch keine Kurse" description="Hier erscheinen deine gebuchten Kurse."><TextLink slot="actions" href="#catalog">Kursübersicht ansehen</TextLink></EmptyState>}
+ {kind==='PrevNextNavigation'&&<PrevNextNavigation previous={{href:'#previous',label:'Grundlagen'}} next={{href:'#next',label:'Datenschutz'}}/>}
+ {kind==='MetadataList'&&<MetadataList items={[{label:'Module',value:'5'},{label:'Dauer',value:'120 Minuten'},{label:'Format',value:'Selbstlernen'}]}/>}
+ {kind==='ThemeToggle'&&<div class="primitive-stack"><ThemeToggle label="Farbdarstellung"/><ThemeToggle label="Weitere Farbdarstellung"/></div>}
+ {kind==='Dialog'&&<div class="primitive-stack"><Dialog id="first-dialog" title="Kursinformationen" triggerLabel="Informationen öffnen"><p>Diese Vorschau enthält ausschließlich synthetische Daten.</p><TextInput aria-label="Notiz"/></Dialog><Dialog id="second-dialog" title="Weitere Informationen" triggerLabel="Zweiten Dialog öffnen"><p>Ein zweiter unabhängiger Dialog.</p></Dialog></div>}
+ {kind==='CopyButton'&&<div class="primitive-stack"><CopyButton value="synthetic-course-reference" label="Kurskennung kopieren"/><CopyButton value="synthetic-other-reference" label="Weitere Kennung kopieren"/></div>}
+ {kind==='Card'&&<Card variant={variant} padding={padding} shadow={shadow} title="KI verstehen. Sicher anwenden." eyebrow="Lernen mit kieks.me" text="Wissen wird wirksam, wenn es im Alltag ankommt."><TextLink slot="footer" href="#course">Kurs ansehen</TextLink></Card>}
+ {kind==='Button'&&<Button variant={variant==='surface'?'primary':variant} size={size} shadow={shadow==='none'?'none':'ink'} disabled={disabled}>Weiter zum Kurs</Button>}
+ </div><footer>Website-Designwerte · isolierte Komponentenvorschau</footer></section>
+<style>.primitive-example{min-height:100vh;box-sizing:border-box;background:var(--page-bg);color:var(--text-primary);padding:24px;font-family:'Source Sans 3',Arial,sans-serif}.primitive-stage{padding:40px 8px;max-width:54rem;min-width:0}.primitive-stack{display:grid;gap:1.5rem}header,footer{color:var(--text-secondary);font-size:13px}header{border-bottom:1px solid var(--text-secondary);padding-bottom:16px}footer{padding-top:16px}</style>

@@ -2,9 +2,9 @@
 
 ## Vorbereiteter Stand
 
-Öffentliche Paketnamen: **`@kieksme/tokens`** und **`@kieksme/astro`**, anfänglich Version `0.1.0`. Root-Workspace und `@kieksme/catalog` bleiben privat. Die Paketmanifeste enthalten `publishConfig.access: public`; das ist eine Veröffentlichungsvorbereitung, keine bereits erfolgte npm-Publikation.
+Öffentliche Paketnamen: **`@kieksme/kieksme-tokens`** und **`@kieksme/kieksme-astro`**, anfänglich Version `0.2.0`. Root-Workspace und `@kieksme/catalog` bleiben privat. Die Paketmanifeste enthalten `publishConfig.access: public`; das ist eine Veröffentlichungsvorbereitung, keine bereits erfolgte npm-Publikation.
 
-`@kieksme/astro` hängt exakt von derselben Version von `@kieksme/tokens` ab. Npm Workspaces verlinkt diese SemVer-Abhängigkeit lokal; Tarballs enthalten kein `workspace:`-Protokoll und benötigen beim Verbraucher keine benachbarten Checkouts. Beide Pakete werden in dieser ersten Release-Struktur gemeinsam versioniert. Eine spätere unabhängige Versionierung braucht ein bewusstes Releaseverfahren.
+`@kieksme/kieksme-astro` hängt exakt von derselben Version von `@kieksme/kieksme-tokens` ab. Npm Workspaces verlinkt diese SemVer-Abhängigkeit lokal; Tarballs enthalten kein `workspace:`-Protokoll und benötigen beim Verbraucher keine benachbarten Checkouts. Beide Pakete werden in dieser ersten Release-Struktur gemeinsam versioniert. Eine spätere unabhängige Versionierung braucht ein bewusstes Releaseverfahren.
 
 Der Token-Export enthält JSON und generiertes CSS. Der Astro-Export enthält kompilierbare `.astro`-Quellen, CSS und unveränderte Logo-SVGs. Der konsumierende Astro-Build kompiliert die Komponenten und verarbeitet die Assets. Es gibt keinen vorgetäuschten frameworkunabhängigen JavaScript-UI-Build.
 
@@ -22,7 +22,7 @@ Trusted Publishing setzt einen unterstützten GitHub-hosted Runner und hinreiche
 
 ## Ablauf und Schutzgrenzen
 
-- Ein Tag **`ui-v0.1.0`** triggert den Release für die entsprechende gemeinsame Paketversion. Beide Manifestversionen sowie die Astro-Dependency müssen übereinstimmen.
+- Ein Tag **`ui-v0.2.0`** triggert den Release für die entsprechende gemeinsame Paketversion. Beide Manifestversionen sowie die Astro-Dependency müssen übereinstimmen.
 - Der Tag-Commit muss auf `origin/main` enthalten sein. Manuelle Workflowläufe müssen auf `main` gestartet werden. Keine stillen Branch-Releases.
 - `workflow_dispatch` hat `publish: false` als Standard: es baut, prüft und lädt Tarballs als GitHub-Artefakt hoch, schreibt aber nicht nach npm. Nur ein Release-Tag oder ein bewusst aktivierter manueller Publish fordert die Publikation an.
 - Vor Publikation laufen frozen Installation (`npm ci --ignore-scripts`), Katalog-Build, vorhandene Tests, Playwright-Browserprüfungen sowie isolierte Builds echter Tarball-Verbraucher mit Astro 5.18.2 und 7.4.13.
@@ -45,7 +45,7 @@ Der Consumer-Smoke installiert gepackte Tarballs und gepinnte Astro-Versionen in
 
 Website-basierte Tokens und Code behalten den mitgelieferten Website-MIT-Hinweis. Die Logo-SVGs stammen aus dem Brand-Repository, dessen GPL-v3-Text und Quellenhinweis im Astro-Paket mitgeliefert werden; sie werden nicht pauschal zu MIT umdeklariert. Das Paket verweist deshalb auf `LICENSES.md`. Marken-/Logonutzungsregeln werden dadurch nicht aufgehoben.
 
-Fontdateien werden derzeit **nicht** vom Astro-Paket verteilt. Der optionale Export `@kieksme/astro/fonts.css` lädt Hanken Grotesk und Source Sans 3 aus gepinnten `@fontsource`-Abhängigkeiten, die Fontdateien samt SIL-OFL-Notices mitliefern. Alternativ laden Verbraucher die Schriften selbst. CSS-Schriftfamilien allein stellen keine Fontdateien bereit. Vor einer späteren Asset-/Fontpaketierung Auswahl, Lizenzen und Originaldateien prüfen.
+Fontdateien werden derzeit **nicht** vom Astro-Paket verteilt. Der optionale Export `@kieksme/kieksme-astro/fonts.css` lädt Hanken Grotesk und Source Sans 3 aus gepinnten `@fontsource`-Abhängigkeiten, die Fontdateien samt SIL-OFL-Notices mitliefern. Alternativ laden Verbraucher die Schriften selbst. CSS-Schriftfamilien allein stellen keine Fontdateien bereit. Vor einer späteren Asset-/Fontpaketierung Auswahl, Lizenzen und Originaldateien prüfen.
 
 ## Verantwortung und Änderungsregeln
 

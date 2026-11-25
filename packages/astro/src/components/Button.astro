@@ -1,5 +1,29 @@
 ---
-interface Props { label?: string; variant?: 'primary' | 'secondary'; disabled?: boolean }
-const { label = 'Weiter zum Kurs', variant = 'primary', disabled = false } = Astro.props;
+import type { HTMLAttributes } from 'astro/types';
+export type Props = HTMLAttributes<'button'> & {
+  label?: string;
+  variant?: 'primary' | 'secondary' | 'ghost';
+  size?: 's' | 'm' | 'l';
+  shadow?: 'ink' | 'none';
+  href?: string;
+  target?: string;
+  rel?: string;
+  download?: string | boolean;
+};
+const { label, variant = 'primary', size = 'm', shadow = 'ink', disabled = false, href, target, rel, type,
+  class: className, ...attributes } = Astro.props;
+const hasSlot = Astro.slots.has('default');
+const classes = ['ui-button', `ui-button-${variant}`, `ui-button-size-${size}`, `ui-button-shadow-${shadow}`, className];
 ---
-<button type="button" class:list={['ui-button', `ui-button-${variant}`]} disabled={disabled}>{label}<slot /></button>
+{href && !type ? (
+  <a {...attributes} href={disabled ? undefined : href} target={target}
+    rel={rel ?? (target === '_blank' ? 'noopener noreferrer' : undefined)}
+    class:list={classes} aria-disabled={disabled || undefined}
+    tabindex={disabled ? -1 : attributes.tabindex}>
+    {hasSlot ? <slot /> : label}
+  </a>
+) : (
+  <button {...attributes} type={type ?? 'button'} class:list={classes} disabled={disabled}>
+    {hasSlot ? <slot /> : label}
+  </button>
+)}

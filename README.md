@@ -1,10 +1,10 @@
 # kieks.me.ui – Designsystem
 
-Gemeinsames kieks.me-Designsystem mit Designwerten und einem Astrobook-Komponentenkatalog. Das öffentliche GitHub-Repository ist eingerichtet; bestehende Anwendungen sind noch nicht migriert. Die öffentlichen npm-Pakete sind vorbereitet, aber noch nicht veröffentlicht.
+Gemeinsames kieks.me-Designsystem mit Designwerten und einem Astrobook-Komponentenkatalog. Version 0.2.0 enthält 22 allgemeine und 17 Website-kompatible Astro-Bausteine. Website und Kursportal werden mit gepackten, versionierten Paketen angebunden; die öffentlichen npm-Pakete sind noch nicht veröffentlicht.
 
 ## Was bereits funktioniert
 
-`@kieksme/tokens` enthält die vorhandenen Website-Farben und CSS-Variablennamen einschließlich Hell/Dunkel, kompatibler Aliase sowie die Marken-Schriftfamilien. Ein Node-Build ohne Fremdabhängigkeiten erzeugt CSS; Herkunft und Konsistenz werden geprüft. Die unveränderten Referenzen liegen beim Paket. Ein vollständiger Komponentenbestand ist noch nicht extrahiert.
+`@kieksme/kieksme-tokens` enthält die vorhandenen Website-Farben und CSS-Variablennamen einschließlich Hell/Dunkel, kompatibler Aliase sowie die Marken-Schriftfamilien. Ein Node-Build ohne Fremdabhängigkeiten erzeugt CSS; Herkunft und Konsistenz werden geprüft. Die unveränderten Referenzen liegen beim Paket. Ein vollständiger Komponentenbestand ist noch nicht extrahiert.
 
 Mit Node 24 im Repositoryroot:
 
@@ -20,13 +20,13 @@ Die Browserprüfung benötigt Chromium (vorhandenes System-Chromium oder `npx pl
 
 ## Struktur
 
-- `packages/tokens`: implementierte frameworkneutrale Basis, Version 0.1.0, für öffentliche npm-Verteilung vorbereitet.
-- `packages/astro`: native Logo-, Heading-, Button-, Card- und Note-Komponenten mit reinem CSS.
+- `packages/tokens`: implementierte frameworkneutrale Basis, Version 0.2.0, für öffentliche npm-Verteilung vorbereitet.
+- `packages/astro`: allgemeine Form-/Interaktionsbausteine und Website-Komponenten mit eigenständigem CSS, typisierten Varianten und nativen Attributen.
 - `templates/email`: Anschlussplan für MJML; die derzeitige Implementierung bleibt im DataHub.
 - `templates/print`: Anschlussplan für PDF und PowerPoint; kein universeller Web-Renderer.
 - `docs`: Architektur, Herkunft, Migrationsplan und Releaseentscheidungen.
 - `examples`: lokale Darstellung des Tokenpakets.
-- `apps/catalog`: implementierter Astrobook-Katalog mit 13 Varianten und Playwright-Smoke, siehe `docs/component-catalog.md` und `apps/catalog/README.md`. Zieladresse: `https://ui.kieks.me`; tatsächliche Hosting-/DNS-/TLS-Bereitstellung separat prüfen.
+- `apps/catalog`: implementierter Astrobook-Katalog mit Website-Galerie, einzelnen Primitives und Varianten-/Interaktionstests, siehe `docs/component-catalog.md` und `apps/catalog/README.md`. Live unter `https://kieksme.github.io/kieks.me.ui/`; Zieladresse `https://ui.kieks.me` benötigt weiterhin die Domain-/DNS-Zuordnung.
 
 Ein React-Paket wird erst angelegt, wenn tatsächlich eigene React-Komponenten für DataHub benötigt werden. Payloads Adminoberfläche wird nicht pauschal ersetzt.
 

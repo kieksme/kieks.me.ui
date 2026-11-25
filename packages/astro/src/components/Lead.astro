@@ -1,0 +1,5 @@
+---
+interface Props { size?: 'l'|'m'; tone?: 'primary'|'secondary'|'onColor'; class?:string }
+const {size='l',tone='secondary',class:className=''}=Astro.props;
+---
+<p class:list={['ui-lead',`ui-lead-${size}`,`ui-tone-${tone}`,className]}><slot /></p>

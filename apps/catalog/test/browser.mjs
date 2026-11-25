@@ -42,7 +42,6 @@ try {
     const button = page.getByRole('button', { name: 'Weiter zum Kurs', exact: true });
     await button.waitFor();
     await page.keyboard.press('Tab');
-    await button.focus();
     assert.equal(await button.evaluate(el => el === document.activeElement), true);
     assert.notEqual(await button.evaluate(el => getComputedStyle(el).outlineStyle), 'none');
     await page.keyboard.press('Space');
@@ -64,6 +63,16 @@ try {
     }
   }
   console.log('PASS logo, heading, card and note in both themes');
+  for (const kind of ['heading','heading-dunkel','button','button-dunkel','lead','logo','logo-dunkel','marker','sticker','text-link','zigzag-divider','burst','flames','halftone','faq-item','faq-item-dunkel','step-card','feature-card','service-card','speech-bubble']) {
+    const response = await page.goto(`${base}/stories/src/stories/website/${kind}/`);
+    assert.equal(response.status(), 200, `Website gallery ${kind}`);
+    assert.equal(await page.locator('.website-example').count(), 1);
+    const imageStates = await page.locator('.website-stage img').evaluateAll(async images => Promise.all(images.map(async image => { image.loading = 'eager'; try { await image.decode(); return image.naturalWidth > 0; } catch { return false; } })));
+    assert.ok(imageStates.every(Boolean), `Bundled website assets for ${kind}`);
+    if (kind.startsWith('logo')) assert.ok(imageStates.length > 0);
+  }
+  console.log('PASS all twenty website gallery variants and bundled assets');
+
   await mkdir(output, { recursive: true });
   for (const [theme, width] of [['hell', 1200], ['dunkel', 1200], ['hell', 375], ['dunkel', 375]]) {
     await page.setViewportSize({ width, height: 850 });

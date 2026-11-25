@@ -19,7 +19,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run build
       - run: npm test
-      - run: npm pack --workspace @kieksme/tokens --dry-run
+      - run: npm pack --workspace @kieksme/kieksme-tokens --dry-run
       - name: Use runner-provided Chrome
         shell: bash
         run: |
