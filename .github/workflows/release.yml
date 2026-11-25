@@ -25,7 +25,7 @@ jobs:
       contents: read
       id-token: write
     env:
-      RELEASE_DIR: ${{ runner.temp }}/ui-release
+      RELEASE_DIR: .release
       ASTRO_TELEMETRY_DISABLED: '1'
     steps:
       - uses: actions/checkout@v6
@@ -59,7 +59,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: ui-npm-packages
-          path: ${{ runner.temp }}/ui-release/*.tgz
+          path: ${{ env.RELEASE_DIR }}/*.tgz
           if-no-files-found: error
       - name: Publish tokens then Astro through OIDC
         if: github.event_name == 'push' || inputs.publish == true
