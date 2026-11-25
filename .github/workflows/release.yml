@@ -50,7 +50,13 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run build
       - run: npm test
-      - run: npx playwright install --with-deps chromium
+      - name: Use runner-provided Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          browser_path="$(command -v google-chrome)"
+          test -x "$browser_path"
+          echo "CHROMIUM_PATH=$browser_path" >> "$GITHUB_ENV"
       - run: npm run test:browser
       - name: Prepare exact package artifacts
         run: node .github/scripts/package-release.mjs
