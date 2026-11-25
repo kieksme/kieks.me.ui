@@ -1,0 +1,40 @@
+{
+  "name": "@kieksme/astro",
+  "version": "0.1.0",
+  "type": "module",
+  "files": [
+    "src",
+    "README.md",
+    "LICENSES.md",
+    "LICENSE-MIT.txt",
+    "LICENSE-GPL-3.0.txt"
+  ],
+  "exports": {
+    "./components/*": "./src/components/*.astro",
+    "./styles.css": "./src/styles.css",
+    "./fonts.css": "./src/fonts.css"
+  },
+  "peerDependencies": {
+    "astro": ">=5 <8"
+  },
+  "dependencies": {
+    "@kieksme/tokens": "0.1.0",
+    "@fontsource/hanken-grotesk": "5.3.0",
+    "@fontsource/source-sans-3": "5.3.1"
+  },
+  "description": "Source Astro components for the kieks.me design system",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kieksme/kieks.me.ui.git",
+    "directory": "packages/astro"
+  },
+  "homepage": "https://ui.kieks.me",
+  "bugs": {
+    "url": "https://github.com/kieksme/kieks.me.ui/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "license": "SEE LICENSE IN LICENSES.md"
+}

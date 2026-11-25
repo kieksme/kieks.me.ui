@@ -1,0 +1,7 @@
+/* Optional self-hosted fonts; upstream packages retain SIL OFL notices. */
+@import '@fontsource/hanken-grotesk/400.css';
+@import '@fontsource/hanken-grotesk/700.css';
+@import '@fontsource/hanken-grotesk/800.css';
+@import '@fontsource/hanken-grotesk/900.css';
+@import '@fontsource/source-sans-3/400.css';
+@import '@fontsource/source-sans-3/600.css';

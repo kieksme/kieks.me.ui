@@ -1,21 +1,41 @@
 {
   "name": "@kieksme/tokens",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "files": [
     "dist",
-    "tokens.json"
+    "tokens.json",
+    "README.md",
+    "LICENSES.md",
+    "LICENSE-MIT.txt",
+    "scripts/build.mjs"
   ],
   "exports": {
     ".": "./tokens.json",
-    "./css": "./dist/tokens.css"
+    "./css": "./dist/tokens.css",
+    "./tokens.json": "./tokens.json"
   },
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "prepack": "npm run build"
   },
   "engines": {
     "node": ">=24"
-  }
+  },
+  "description": "Shared kieks.me design tokens with explicit light and dark themes",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kieksme/kieks.me.ui.git",
+    "directory": "packages/tokens"
+  },
+  "homepage": "https://ui.kieks.me",
+  "bugs": {
+    "url": "https://github.com/kieksme/kieks.me.ui/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "license": "MIT"
 }

@@ -4,13 +4,17 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "packages/tokens"
+    "packages/tokens",
+    "packages/astro",
+    "apps/catalog"
   ],
   "engines": {
     "node": ">=24"
   },
   "scripts": {
-    "build": "npm run build --workspace @kieksme/tokens",
-    "test": "npm run test --workspace @kieksme/tokens"
+    "build": "npm run build --workspace @kieksme/tokens && npm run build --workspace @kieksme/catalog",
+    "test": "npm run test --workspace @kieksme/tokens",
+    "dev": "npm run build --workspace @kieksme/tokens && npm run dev --workspace @kieksme/catalog",
+    "test:browser": "npm run test:browser --workspace @kieksme/catalog"
   }
 }

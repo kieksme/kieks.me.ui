@@ -1,0 +1,5 @@
+---
+interface Props { label?: string; variant?: 'primary' | 'secondary'; disabled?: boolean }
+const { label = 'Weiter zum Kurs', variant = 'primary', disabled = false } = Astro.props;
+---
+<button type="button" class:list={['ui-button', `ui-button-${variant}`]} disabled={disabled}>{label}<slot /></button>

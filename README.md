@@ -1,6 +1,6 @@
-# kieks.me.ui – Startstruktur
+# kieks.me.ui – Designsystem
 
-Lokaler Vorschlag für ein eigenes kieks.me-Designsystem-Repository. Noch kein GitHub-Repository, keine Veröffentlichung und keine Migration bestehender Anwendungen. Der Repositoryname `kieks.me.ui` ist bestätigt; die Paketnamen sind Vorschläge.
+Gemeinsames kieks.me-Designsystem mit Designwerten und einem Astrobook-Komponentenkatalog. Das öffentliche GitHub-Repository ist eingerichtet; bestehende Anwendungen sind noch nicht migriert. Die öffentlichen npm-Pakete sind vorbereitet, aber noch nicht veröffentlicht.
 
 ## Was bereits funktioniert
 
@@ -9,21 +9,24 @@ Lokaler Vorschlag für ein eigenes kieks.me-Designsystem-Repository. Noch kein G
 Mit Node 24 im Repositoryroot:
 
 ```sh
+npm ci --ignore-scripts
+npm run dev
 npm run build
 npm test
+npm run test:browser
 ```
 
-Eine Paketinstallation ist hierfür nicht erforderlich. Das Beispiel `examples/tokens.html` nach dem Build im Browser öffnen. Es benötigt weder Server noch Netzwerk und erlaubt Hell/Dunkel-Auswahl.
+Die Browserprüfung benötigt Chromium (vorhandenes System-Chromium oder `npx playwright install chromium`). Das Beispiel `examples/tokens.html` nach dem Build im Browser öffnen. Es benötigt weder Server noch Netzwerk und erlaubt Hell/Dunkel-Auswahl.
 
 ## Struktur
 
-- `packages/tokens`: implementierte frameworkneutrale Basis, Version 0.1.0, zunächst privat.
-- `packages/astro`: dokumentierter nächster Extraktionsschritt, noch kein Paket.
+- `packages/tokens`: implementierte frameworkneutrale Basis, Version 0.1.0, für öffentliche npm-Verteilung vorbereitet.
+- `packages/astro`: native Logo-, Heading-, Button-, Card- und Note-Komponenten mit reinem CSS.
 - `templates/email`: Anschlussplan für MJML; die derzeitige Implementierung bleibt im DataHub.
 - `templates/print`: Anschlussplan für PDF und PowerPoint; kein universeller Web-Renderer.
 - `docs`: Architektur, Herkunft, Migrationsplan und Releaseentscheidungen.
 - `examples`: lokale Darstellung des Tokenpakets.
-- Ein zukünftiger Astrobook-Komponentenkatalog mit Playwright-Prüfungen ist in `docs/component-catalog.md` geplant, noch nicht installiert. Zieladresse: `https://ui.kieks.me`; Hosting, DNS und TLS sind noch nicht eingerichtet.
+- `apps/catalog`: implementierter Astrobook-Katalog mit 13 Varianten und Playwright-Smoke, siehe `docs/component-catalog.md` und `apps/catalog/README.md`. Zieladresse: `https://ui.kieks.me`; tatsächliche Hosting-/DNS-/TLS-Bereitstellung separat prüfen.
 
 Ein React-Paket wird erst angelegt, wenn tatsächlich eigene React-Komponenten für DataHub benötigt werden. Payloads Adminoberfläche wird nicht pauschal ersetzt.
 
@@ -31,10 +34,16 @@ Ein React-Paket wird erst angelegt, wenn tatsächlich eigene React-Komponenten f
 
 Markenfarben wie Navy/Aqua bleiben stabil; semantische Werte wie Text, Hintergrund, Hinweisfläche und Link ändern sich mit dem Modus. `pop-gray` ist historisch modusabhängig und deshalb kein unveränderlicher Markenwert. Die vorhandenen Variablennamen bleiben im ersten Schritt erhalten, um unbemerkte Designänderungen zu vermeiden. Der Ursprung verwendet explizites `.dark`; das Paket ergänzt `[data-theme]`, ändert aber nicht automatisch nach Betriebssystempräferenz den Modus.
 
-Schriftfamilien: Hanken Grotesk für Überschriften, Source Sans 3 für Fließtext. Fontdateien werden nicht automatisch geladen oder eingebettet. Originale Logos, Illustrationen und Schriftlizenzen bleiben zunächst im Brand-Repository; vor einem Paketexport müssen Asset-Auswahl, Versionierung und Lizenzen geklärt werden. Logos werden nicht verändert.
+Schriftfamilien: Hanken Grotesk für Überschriften, Source Sans 3 für Fließtext. Der Katalog lädt lokale Fontsource-Dateien; andere Konsumenten kontrollieren ihre Font-Einbindung selbst. Zwei Original-Logo-SVGs sind unverändert aus der Website im Astro-Paket enthalten. Weitere Illustrationen/Assets bleiben im Brand-Repository; die Fontlizenzen liegen auch im statischen Katalog unter `licenses/`.
 
 Astro, React, MJML und Print teilen Designwerte und Assets, benötigen jedoch eigene Komponenten bzw. Vorlagen. MJML-Clients können CSS-Variablen und Webfonts nicht verlässlich verwenden: Der Mail-Build setzt Werte direkt ein und bietet Systemfont-Fallbacks. Für druckbare PDFs ist ein sparsames helles Drucklayout sinnvoll, kein ungefragter Dark-Mode-Ausdruck. PowerPoint braucht echte Folienmaster und eingebettete bzw. kompatible Schriftregeln.
 
 ## Etappen und Entscheidungen
 
 Siehe `docs/migration.md` und `docs/releases.md`. Keine Produktivänderung oder Veröffentlichung erfolgt durch diese Startstruktur.
+
+## Dokumentation und Bereitstellung
+
+Der interaktive Katalog ist für `https://ui.kieks.me` vorgesehen. Allgemeine Anleitungen und Beiträge gehören ins GitHub-Wiki; versionsabhängige technische Dokumentation bleibt mit dem Code unter `docs/`. Das Wiki wird durch den Build nicht automatisch veröffentlicht.
+
+GitHub Pages verwendet `.github/workflows/pages.yml`. Der Workflow liest Origin und Basispfad aus der Pages-Konfiguration, baut den Katalog und veröffentlicht `apps/catalog/dist`. Solange keine Custom Domain eingerichtet ist, gilt der GitHub-Projektpfad `/kieks.me.ui`. Für die Custom Domain sind in Pages `ui.kieks.me` und bei IONOS ein CNAME `ui` auf `kieksme.github.io` einzurichten; anschließend DNS und HTTPS prüfen. Vorhandene Website- und Mail-Records bleiben erhalten.

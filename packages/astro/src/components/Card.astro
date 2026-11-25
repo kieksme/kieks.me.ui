@@ -1,0 +1,5 @@
+---
+interface Props { title?: string; text?: string; eyebrow?: string }
+const { title = 'KI verstehen. Sicher anwenden.', text = 'Wissen wird wirksam, wenn es im Alltag ankommt.', eyebrow = 'Lernen mit kieks.me' } = Astro.props;
+---
+<article class="ui-card"><p class="ui-eyebrow">{eyebrow}</p><h2>{title}</h2><p>{text}</p><slot /></article>

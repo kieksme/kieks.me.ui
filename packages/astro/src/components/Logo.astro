@@ -1,0 +1,7 @@
+---
+import light from '../assets/logo.svg?url';
+import dark from '../assets/logo-dark.svg?url';
+interface Props { size?: number }
+const { size = 64 } = Astro.props;
+---
+<span class="ui-logo"><img class="ui-logo-light" src={light} alt="kieks.me" width={size} height={size}/><img class="ui-logo-dark" src={dark} alt="kieks.me" width={size} height={size}/></span>

@@ -1,0 +1,5 @@
+---
+interface Props { title?: string; text?: string }
+const { title = 'Gut zu wissen', text = 'Deine Kursunterlagen bleiben in deinem gebuchten Paket verfügbar.' } = Astro.props;
+---
+<aside class="ui-note"><strong>{title}</strong><p>{text}</p><slot /></aside>

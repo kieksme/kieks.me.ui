@@ -1,2 +1,7 @@
 node_modules/
 packages/tokens/dist/
+apps/catalog/dist/
+apps/catalog/.astro/
+apps/catalog/playwright-results/
+
+.release/

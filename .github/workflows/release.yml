@@ -1,0 +1,66 @@
+name: Publish UI packages
+
+on:
+  push:
+    tags: ['ui-v*']
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish prepared packages through npm Trusted Publishing'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-npm-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: npm-release
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      RELEASE_DIR: ${{ runner.temp }}/ui-release
+      ASTRO_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Require main release source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          if [ "$GITHUB_REF_TYPE" = branch ] && [ "$GITHUB_REF_NAME" != main ]; then
+            echo 'Manual releases must run from main.' >&2
+            exit 1
+          fi
+          git merge-base --is-ancestor HEAD origin/main
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install npm with Trusted Publishing support
+        run: npm install --global npm@11.19.1
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+      - name: Prepare exact package artifacts
+        run: node .github/scripts/package-release.mjs
+      - name: Build isolated consumers from tarballs
+        run: node .github/scripts/consumer-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ui-npm-packages
+          path: ${{ runner.temp }}/ui-release/*.tgz
+          if-no-files-found: error
+      - name: Publish tokens then Astro through OIDC
+        if: github.event_name == 'push' || inputs.publish == true
+        run: node .github/scripts/package-release.mjs --publish
